@@ -2,6 +2,8 @@
 
 Select the smallest strategy that satisfies the modernization outcome. Splitting a service is not automatically more modern than improving a well-owned modular monolith.
 
+This strategy matrix is an opinionated practitioner synthesis influenced by [DORA continuous-delivery guidance](https://dora.dev/capabilities/continuous-delivery/), [Google SRE](https://sre.google/), and the risk-driven design approach in [OWASP SAMM](https://owasp.org/www-project-samm/). The strategy names and decision rules are guidance, not normative requirements from those sources.
+
 | Strategy | Best fit | Main risk | Required evidence |
 | --- | --- | --- | --- |
 | In-place upgrade | Boundaries are acceptable and primary risk is unsupported runtime or framework | Large compatibility step | Regression suite, dependency analysis, rollback rehearsal |
@@ -51,3 +53,5 @@ Route by stable tenant, account, geography, or percentage. Keep cohorts observab
 - Rollback depends on manually reconstructing lost writes.
 - Success is defined only as deploying the new technology.
 - The legacy path has no deletion criteria or funded completion window.
+
+See [Sources and Traceability](references.md) for citation scope and limitations.

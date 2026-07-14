@@ -5,6 +5,7 @@ check: test example
 test:
 	python3 -m unittest discover -s tests -v
 	PYTHONPYCACHEPREFIX=.pycache python3 -m py_compile scripts/*.py tests/*.py
+	python3 scripts/validate_sources.py
 
 example:
 	python3 scripts/score_assessment.py \

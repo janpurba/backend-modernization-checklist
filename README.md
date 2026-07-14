@@ -1,18 +1,33 @@
 # Backend Modernization Checklist
 
-A practical, evidence-based assessment toolkit for modernizing Java and Spring Boot systems without turning a framework upgrade into an uncontrolled rewrite.
+An opinionated, evidence-based assessment toolkit for modernizing Java and Spring Boot systems without turning a framework upgrade into an uncontrolled rewrite.
 
-It converts 40 checks across ownership, runtime, architecture, data, reliability, security, testing, observability, delivery, and operations into a weighted decision and prioritized action list.
+It converts 40 practitioner-defined checks across ownership, runtime, architecture, data, reliability, security, testing, observability, delivery, and operations into a weighted decision and prioritized action list.
+
+The checklist is inspired by [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final), [OWASP SAMM](https://owasp.org/www-project-samm/) and [ASVS](https://owasp.org/www-project-application-security-verification-standard/), [Google SRE](https://sre.google/), and [DORA](https://dora.dev/). It is not an official profile, certification, or compliance standard for any of them.
 
 ## What You Get
 
 - A version-neutral Java/Spring Boot modernization checklist
-- Evidence requirements for every control
+- Evidence requirements for every check
 - Weighted scoring with explicit critical blockers
 - A repeatable `READY`, `CONDITIONAL`, or `BLOCKED` decision
 - A sample legacy-service assessment and generated report
 - Discovery, ADR, rollout, and migration-strategy templates
 - A standard-library Python CLI with automated tests and CI
+
+## Scope and Provenance
+
+The 40 checks, ten-domain taxonomy, priority weights, and `65%`/`85%` decision thresholds are the author's opinionated synthesis. They are intended to support engineering conversations and modernization sequencing, not to certify compliance.
+
+The source frameworks influence different parts of the toolkit:
+
+- [NIST SSDF SP 800-218](https://csrc.nist.gov/pubs/sp/800/218/final) informs secure development lifecycle, dependency, artifact, and software supply-chain practices.
+- [OWASP SAMM](https://owasp.org/www-project-samm/) informs security-program maturity and improvement planning; [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/) informs technical application-security verification.
+- [Google SRE](https://sre.google/) informs SLOs, observability, bounded failure handling, on-call readiness, incident response, and recovery exercises.
+- [DORA](https://dora.dev/guides/) informs measurable delivery outcomes, continuous delivery, feedback, and incremental improvement.
+
+See [Sources and Traceability](docs/references.md) for the citation scope and [the per-check source map](checklist/source-map.csv) for conceptual influences. A mapped source does not mean that a check is a verbatim or normative requirement from that source.
 
 ## Start in 60 Seconds
 
@@ -97,17 +112,18 @@ python3 scripts/score_assessment.py \
 ## Repository Structure
 
 ```text
-checklist/catalog.csv             Versioned controls and evidence requirements
+checklist/catalog.csv             Versioned checks and evidence requirements
+checklist/source-map.csv          Per-check conceptual source mapping
 scripts/                          Worksheet generator and scoring CLI
 examples/                         Sanitized assessment and generated reports
-docs/                             Playbook and Java/Spring Boot guidance
+docs/                             Playbook, guidance, and source citations
 templates/                        Discovery, ADR, and rollout templates
 tests/                            Scoring and validation tests
 ```
 
 ## Use in Real Projects
 
-Treat the score as a decision aid, not a substitute for engineering judgment. Tailor controls only through a reviewed change, record why an item is `na`, and keep evidence close to the assessment. Re-score at agreed gates so risk reduction is visible rather than inferred from completed tickets.
+Treat the score as a decision aid, not a substitute for engineering judgment or a compliance audit. Tailor checks only through a reviewed change, record why an item is `na`, and keep evidence close to the assessment. Re-score at agreed gates so risk reduction is visible rather than inferred from completed tickets.
 
 ## License
 

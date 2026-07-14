@@ -1,6 +1,8 @@
 # Java and Spring Boot Upgrade Guide
 
-This guide deliberately avoids hard-coding a "latest" version. Select a vendor-supported Java runtime and Spring Boot line using the target release's official compatibility matrix and migration notes.
+This opinionated guide deliberately avoids hard-coding a "latest" version. Select a vendor-supported Java runtime and Spring Boot line using the target release's [official Spring Boot documentation](https://docs.spring.io/spring-boot/index.html), compatibility requirements, and migration notes.
+
+The security and delivery verification steps are informed by [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final), [OWASP SAMM](https://owasp.org/www-project-samm/) and [ASVS](https://owasp.org/www-project-application-security-verification-standard/), [Google SRE](https://sre.google/), and [DORA continuous-delivery guidance](https://dora.dev/capabilities/continuous-delivery/). The upgrade order and definition of done remain practitioner recommendations, not requirements imposed by those sources.
 
 ## Inventory Before Editing
 
@@ -76,3 +78,5 @@ Commit the inventory as an assessment artifact so compatibility decisions remain
 - Backward-compatible migration and tested rollback
 - Representative performance within agreed thresholds
 - Dashboards, alerts, runbooks, ownership, and recovery evidence updated
+
+See [Sources and Traceability](references.md) for citation scope and limitations.

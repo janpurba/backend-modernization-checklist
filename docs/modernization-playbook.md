@@ -2,6 +2,8 @@
 
 Modernization is a sequence of risk-reduction decisions, not a framework upgrade followed by cleanup. Preserve business behavior, establish evidence, and make each release independently reversible.
 
+This is an opinionated practitioner playbook. Its phase gates synthesize secure-development guidance from [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final) and [OWASP SAMM](https://owasp.org/www-project-samm/), reliability guidance from [Google SRE](https://sre.google/), and incremental-delivery guidance from [DORA](https://dora.dev/capabilities/continuous-delivery/). The sequence and exit gates are author-defined, not normative requirements from those sources.
+
 ## Phase 0: Frame the Decision
 
 Answer four questions before estimating implementation:
@@ -87,3 +89,5 @@ Do not combine a runtime upgrade, database redesign, and service extraction in o
 - Compatibility claim: producer/consumer or old/new version test.
 - Recovery claim: timestamped restore or rollback rehearsal.
 - Security claim: automated scan or negative test plus remediation ownership.
+
+See [Sources and Traceability](references.md) for citation scope and limitations.
