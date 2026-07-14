@@ -15,6 +15,7 @@ The checklist is inspired by [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/f
 - A sample legacy-service assessment and generated report
 - Discovery, ADR, rollout, and migration-strategy templates
 - A standard-library Python CLI with automated tests and CI
+- A static Java/Spring Boot repository scanner that prefills evidence without executing target code
 
 ## Scope and Provenance
 
@@ -29,7 +30,29 @@ The source frameworks influence different parts of the toolkit:
 
 See [Sources and Traceability](docs/references.md) for the citation scope and [the per-check source map](checklist/source-map.csv) for conceptual influences. A mapped source does not mean that a check is a verbatim or normative requirement from that source.
 
-## Start in 60 Seconds
+## Scan a Java/Spring Boot Repository
+
+Run a bounded, read-only static scan:
+
+```bash
+python3 scripts/scan_repository.py \
+  --repo /path/to/spring-service \
+  --output assessment-spring-service.csv \
+  --report scan-spring-service.md
+```
+
+The scanner inventories Maven/Gradle metadata, Java and Spring Boot versions, dependency coordinates, source and tests, database migrations, Docker and CI assets, security signals, resilience configuration, and observability instrumentation. It then prefills all 40 checks with:
+
+- `assessment_type`: `AUTOMATED`, `HYBRID`, or `MANUAL`
+- `confidence`: `high`, `medium`, `low`, or `none`
+- `source_basis`: keys linked to the cited primary sources
+- repository-relative evidence paths without secret values
+
+The scanner deliberately never emits `pass`. Static presence cannot prove that a practice is complete or effective. It emits `partial` when a relevant signal exists, `unknown` when human or runtime evidence is required, and `fail` only for deterministic negative evidence such as high-confidence hardcoded credential material.
+
+Review the prefilled CSV, assign owners, attach runtime and organizational evidence, and promote statuses to `pass` only after verification. See the [scanner design and detection matrix](docs/repository-scanner.md).
+
+## Manual Assessment
 
 Create a conservative worksheet where every item starts as `fail` and `Not assessed`:
 
@@ -37,7 +60,7 @@ Create a conservative worksheet where every item starts as `fail` and `Not asses
 python3 scripts/new_assessment.py --output assessment-my-service.csv
 ```
 
-Replace each status with `pass`, `partial`, `fail`, or `na`, and attach concrete evidence. Then score it:
+Replace each status with `pass`, `partial`, `fail`, `unknown`, or `na`, and attach concrete evidence. Then score it:
 
 ```bash
 python3 scripts/score_assessment.py \
@@ -59,9 +82,9 @@ The generated [sample report](examples/SAMPLE_REPORT.md) shows the expected outp
 | --- | --- |
 | `READY` | Weighted score is at least 85% and no critical check failed |
 | `CONDITIONAL` | Weighted score is 65-84.9% and no critical check failed |
-| `BLOCKED` | Score is below 65% or any critical check failed |
+| `BLOCKED` | Score is below 65% or any critical check is `fail` or `unknown` |
 
-Priority weights are `critical = 5`, `high = 3`, and `medium = 1`. Status values score as `pass = 100%`, `partial = 50%`, `fail = 0%`, while `na` is excluded from the denominator.
+Priority weights are `critical = 5`, `high = 3`, and `medium = 1`. Status values score as `pass = 100%`, `partial = 50%`, `fail = 0%`, and `unknown = 0%`, while `na` is excluded from the denominator.
 
 A high score cannot hide a failed critical control. A check only passes when its evidence is reviewable; expectations and verbal confirmation are not evidence.
 

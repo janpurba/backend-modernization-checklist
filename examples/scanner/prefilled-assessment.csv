@@ -1,0 +1,41 @@
+id,status,evidence,owner,target_date,notes,assessment_type,source_basis,confidence
+OWN-01,partial,Ownership metadata: .github/CODEOWNERS,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,GOOGLE-SRE;OWASP-SAMM,low
+OWN-02,partial,Architecture or capability documentation: README.md,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;OWASP-SAMM,medium
+OWN-03,partial,Consumer or integration inventory: README.md,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;GOOGLE-SRE,low
+OWN-04,partial,Measurable modernization or reliability goals: README.md,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA,medium
+RUN-01,partial,"Detected Java=21, Spring Boot=3.4.0 from pom.xml",,,Detected versions must be checked against the selected vendor support policy; the scanner does not encode lifecycle dates.,HYBRID,NIST-SSDF;SPRING-BOOT,high
+RUN-02,partial,Dependency inventory contains 4 coordinates from pom.xml; vulnerability scan configuration: .github/workflows/ci.yml,,,Inventory is static and unresolved; vulnerability and end-of-life status require tool output and review.,HYBRID,NIST-SSDF;OWASP-SAMM,high
+RUN-03,partial,"Startup validation or graceful shutdown: src/main/resources/application.yml, src/main/java/example/AppConfig.java",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;GOOGLE-SRE;SPRING-BOOT,medium
+RUN-04,partial,Explicit JVM or container resource settings: Dockerfile,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,GOOGLE-SRE;SPRING-BOOT,medium
+ARC-01,unknown,No repository signal found for: Transaction or data ownership signals,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;OWASP-SAMM,none
+ARC-02,partial,"Enforced module or architecture boundaries: pom.xml, src/test/java/example/ArchitectureTest.java",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA,medium
+ARC-03,unknown,No repository signal found for: External integration adapters or clients,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;OWASP-SAMM,none
+ARC-04,unknown,No repository signal found for: Shared-library ownership or compatibility policy,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA,none
+DAT-01,partial,Versioned database migrations: src/main/resources/db/migration/V1__create_sample.sql,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA,medium
+DAT-02,unknown,No repository signal found for: Query plans or digest evidence,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;GOOGLE-SRE,none
+DAT-03,partial,Bounded connection-pool configuration: src/main/resources/application.yml,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,GOOGLE-SRE,medium
+DAT-04,unknown,No repository signal found for: Retention or cleanup implementation,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+REL-01,unknown,No repository signal found for: Retry and idempotency signals,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+REL-02,unknown,No repository signal found for: Remote-call deadlines or failure isolation,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+REL-03,unknown,No repository signal found for: Duplicate or poison-message handling,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+REL-04,unknown,No repository signal found for: Load or degradation test assets,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;GOOGLE-SRE,none
+SEC-01,partial,Secret-scanning configuration: .github/workflows/ci.yml,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,NIST-SSDF;OWASP-SAMM,medium
+SEC-02,partial,"Spring Security boundary configuration: pom.xml, src/main/java/example/SecurityConfig.java",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,OWASP-ASVS;OWASP-SAMM,low
+SEC-03,partial,Input validation or sensitive-data handling: src/main/java/example/AppConfig.java,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,OWASP-ASVS;OWASP-SAMM,low
+SEC-04,partial,"Artifact provenance, SBOM, or vulnerability scanning: .github/workflows/ci.yml",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,NIST-SSDF;OWASP-SAMM,medium
+TST-01,partial,"Automated tests (2 test source files): src/test/java/example/ArchitectureTest.java, src/test/java/example/RepositoryIntegrationTest.java",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;NIST-SSDF,low
+TST-02,partial,"Realistic integration-test infrastructure: pom.xml, src/test/java/example/RepositoryIntegrationTest.java",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;NIST-SSDF,medium
+TST-03,unknown,No repository signal found for: Consumer or provider contract testing,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;NIST-SSDF,none
+TST-04,unknown,No repository signal found for: Performance-test assets,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;GOOGLE-SRE,none
+OBS-01,partial,"SLI, SLO, or error-budget configuration: README.md",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,GOOGLE-SRE,medium
+OBS-02,unknown,No repository signal found for: Structured or correlated logging,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+OBS-03,partial,"Actuator, metrics, or dependency-health instrumentation: pom.xml",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,GOOGLE-SRE,low
+OBS-04,unknown,No repository signal found for: Distributed tracing instrumentation,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+DEL-01,partial,"CI pipeline and repeatable build assets: .github/workflows/ci.yml, Dockerfile",,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;NIST-SSDF,low
+DEL-02,partial,Incremental rollout or rollback procedure: README.md,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA,low
+DEL-03,partial,Configuration binding or startup validation: src/main/java/example/AppConfig.java,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA;SPRING-BOOT,low
+DEL-04,partial,Ordered compatibility or release sequencing: src/main/resources/db/migration/V1__create_sample.sql,,,"Repository signal found, but effectiveness and completeness require review.",HYBRID,DORA,low
+OPS-01,unknown,No repository signal found for: On-call or escalation metadata,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+OPS-02,unknown,No repository signal found for: Operational runbooks,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+OPS-03,unknown,No repository signal found for: Backup or recovery documentation,,,Manual review required; static repository evidence is insufficient.,MANUAL,GOOGLE-SRE,none
+OPS-04,unknown,No repository signal found for: Capacity or cost-management evidence,,,Manual review required; static repository evidence is insufficient.,MANUAL,DORA;GOOGLE-SRE,none

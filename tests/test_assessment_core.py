@@ -68,6 +68,11 @@ class EvaluationTest(unittest.TestCase):
         )
         self.assertEqual(["B", "A"], [item["id"] for item in result["priority_actions"]])
 
+    def test_unknown_critical_check_blocks_assessment(self) -> None:
+        result = evaluate([check("A", "critical")], [answer("A", "unknown")])
+        self.assertEqual("BLOCKED", result["decision"])
+        self.assertEqual(["A"], [item["id"] for item in result["critical_blockers"]])
+
 
 if __name__ == "__main__":
     unittest.main()

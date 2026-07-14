@@ -8,7 +8,13 @@ from pathlib import Path
 from typing import Iterable
 
 
-STATUS_SCORES = {"pass": 1.0, "partial": 0.5, "fail": 0.0, "na": None}
+STATUS_SCORES = {
+    "pass": 1.0,
+    "partial": 0.5,
+    "fail": 0.0,
+    "unknown": 0.0,
+    "na": None,
+}
 PRIORITY_WEIGHTS = {"critical": 5, "high": 3, "medium": 1}
 
 
@@ -143,9 +149,9 @@ def evaluate(checks: Iterable[Check], answers: Iterable[Answer]) -> dict:
             "target_date": answer.target_date or "Unscheduled",
             "action": check.recommended_action,
         }
-        if check.priority == "critical" and answer.status == "fail":
+        if check.priority == "critical" and answer.status in {"fail", "unknown"}:
             blockers.append(item)
-        if answer.status in {"fail", "partial"}:
+        if answer.status in {"fail", "partial", "unknown"}:
             actions.append(item)
 
     score = round((earned / possible * 100) if possible else 0.0, 1)
@@ -167,7 +173,7 @@ def evaluate(checks: Iterable[Check], answers: Iterable[Answer]) -> dict:
     actions.sort(
         key=lambda item: (
             -PRIORITY_WEIGHTS[item["priority"]],
-            0 if item["status"] == "fail" else 1,
+            {"fail": 0, "unknown": 1, "partial": 2}[item["status"]],
             item["domain"],
             item["id"],
         )
@@ -208,7 +214,7 @@ def render_markdown(result: dict, assessment_name: str) -> str:
                 f"Owner: {item['owner']}. Target: {item['target_date']}."
             )
     else:
-        lines.append("No failed critical checks.")
+        lines.append("No failed or unknown critical checks.")
 
     lines.extend(["", "## Priority Actions", ""])
     if result["priority_actions"]:

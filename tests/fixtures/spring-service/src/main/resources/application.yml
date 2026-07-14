@@ -1,0 +1,13 @@
+server:
+  shutdown: graceful
+spring:
+  datasource:
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 2000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus

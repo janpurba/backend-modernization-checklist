@@ -30,6 +30,8 @@ This repository is an opinionated practitioner synthesis. It does not reproduce,
 
 The row-level mapping is maintained in [`checklist/source-map.csv`](../checklist/source-map.csv). `inspired` means a check directly reflects a concept in one or more cited sources. `practitioner-synthesis` means the check combines cited principles with Java/Spring Boot modernization experience; it should not be attributed to a single framework.
 
+The [repository scanner](repository-scanner.md) uses this mapping to cite the conceptual basis of each prefilled row. Static detection rules and confidence levels are implementation choices in this repository; they are not prescribed by the mapped source.
+
 ## Important Limits
 
 - Passing this checklist does not establish NIST SSDF conformance.
