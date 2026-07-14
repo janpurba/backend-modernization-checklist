@@ -681,15 +681,22 @@ def _scan_secrets(view: RepositoryView) -> list[SecretFinding]:
         ("AWS access key", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
         ("GitHub token", re.compile(r"\bgh[pousr]_[A-Za-z0-9]{30,}\b")),
     ]
-    assignment = re.compile(
+    config_assignment = re.compile(
         r"(?i)\b(password|passwd|secret|api[_-]?key|access[_-]?token)\b\s*[:=]\s*['\"]?([^'\"\s#,;]+)"
+    )
+    code_assignment = re.compile(
+        r"(?i)\b(password|passwd|secret|api[_-]?key|access[_-]?token)\b\s*=\s*['\"]([^'\"]+)['\"]"
     )
     for path, text in view.files.items():
         for line_number, line in enumerate(text.splitlines(), start=1):
             for kind, pattern in exact_patterns:
                 if pattern.search(line):
                     findings.append(SecretFinding(path, line_number, kind, "high"))
-            match = assignment.search(line)
+            match = (
+                code_assignment.search(line)
+                if Path(path).suffix.lower() in {".java", ".kt", ".groovy"}
+                else config_assignment.search(line)
+            )
             if not match:
                 continue
             value = match.group(2).strip()

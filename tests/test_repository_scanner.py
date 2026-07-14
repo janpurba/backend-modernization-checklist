@@ -78,6 +78,30 @@ class RepositoryScannerTest(unittest.TestCase):
             self.assertEqual("AUTOMATED", prefills["SEC-01"].assessment_type)
             self.assertNotIn("ProductionSecret123", prefills["SEC-01"].evidence)
 
+    def test_method_call_assignment_is_not_a_hardcoded_secret(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "Secrets.java").write_text(
+                "class Secrets {\n"
+                "  String secret = secretManager.getSecret(secretName);\n"
+                "  String apiKey = parameters.getSystemParameter(key);\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            inventory = build_inventory(collect_repository(root))
+            self.assertEqual((), inventory.secret_findings)
+
+    def test_java_string_literal_secret_is_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "Secrets.java").write_text(
+                'class Secrets { String apiKey = "ProductionSecret123!"; }\n',
+                encoding="utf-8",
+            )
+            inventory = build_inventory(collect_repository(root))
+            self.assertEqual(1, len(inventory.secret_findings))
+            self.assertEqual("high", inventory.secret_findings[0].confidence)
+
     def test_file_limit_is_enforced(self) -> None:
         with self.assertRaisesRegex(ScanError, "max-files"):
             collect_repository(FIXTURE, max_files=1)
