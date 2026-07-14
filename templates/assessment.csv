@@ -1,0 +1,41 @@
+id,status,evidence,owner,target_date,notes
+OWN-01,fail,Not assessed,,,Owner names and escalation path
+OWN-02,fail,Not assessed,,,Context diagram and capability list
+OWN-03,fail,Not assessed,,,Consumer inventory with request volume and criticality
+OWN-04,fail,Not assessed,,,Baseline and target measures
+RUN-01,fail,Not assessed,,,Runtime inventory and support references
+RUN-02,fail,Not assessed,,,Dependency report and vulnerability scan
+RUN-03,fail,Not assessed,,,Startup logs and graceful-shutdown test
+RUN-04,fail,Not assessed,,,Runtime flags and resource limits
+ARC-01,fail,Not assessed,,,Transaction map and data-owner matrix
+ARC-02,fail,Not assessed,,,Dependency diagram or architecture test
+ARC-03,fail,Not assessed,,,Adapter inventory and contract tests
+ARC-04,fail,Not assessed,,,Library inventory and version policy
+DAT-01,fail,Not assessed,,,Migration plan and expand-contract sequence
+DAT-02,fail,Not assessed,,,Digest ranking and execution plans
+DAT-03,fail,Not assessed,,,Pool metrics and configuration
+DAT-04,fail,Not assessed,,,Retention policy and job metrics
+REL-01,fail,Not assessed,,,Retry policy and idempotency evidence
+REL-02,fail,Not assessed,,,Client configuration and failure test
+REL-03,fail,Not assessed,,,Consumer tests and dead-letter procedure
+REL-04,fail,Not assessed,,,Load-test report and degradation runbook
+SEC-01,fail,Not assessed,,,Secret scan and rotation record
+SEC-02,fail,Not assessed,,,Access-control matrix and negative tests
+SEC-03,fail,Not assessed,,,Security tests and data classification
+SEC-04,fail,Not assessed,,,"SBOM, image scan, and signed build evidence"
+TST-01,fail,Not assessed,,,Critical-journey test map
+TST-02,fail,Not assessed,,,Integration-test evidence
+TST-03,fail,Not assessed,,,Contract-test results
+TST-04,fail,Not assessed,,,Load profile and result report
+OBS-01,fail,Not assessed,,,"SLI definitions, SLOs, and ownership"
+OBS-02,fail,Not assessed,,,Sample logs and redaction tests
+OBS-03,fail,Not assessed,,,Dashboard and metric catalog
+OBS-04,fail,Not assessed,,,Trace samples and sampling policy
+DEL-01,fail,Not assessed,,,Pipeline run and immutable artifact reference
+DEL-02,fail,Not assessed,,,Rehearsal evidence and rollback criteria
+DEL-03,fail,Not assessed,,,Configuration schema and startup validation
+DEL-04,fail,Not assessed,,,Release sequence and compatibility matrix
+OPS-01,fail,Not assessed,,,On-call schedule and escalation policy
+OPS-02,fail,Not assessed,,,Tested runbooks with commands and expected signals
+OPS-03,fail,Not assessed,,,Restore evidence and recovery objectives
+OPS-04,fail,Not assessed,,,Cost baseline and capacity forecast

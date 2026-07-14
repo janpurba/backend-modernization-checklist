@@ -1,0 +1,8 @@
+.DS_Store
+.idea/
+.vscode/
+.pycache/
+__pycache__/
+*.pyc
+assessment-*.csv
+report-*.md

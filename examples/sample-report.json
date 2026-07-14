@@ -1,0 +1,371 @@
+{
+  "decision": "BLOCKED",
+  "score": 56.5,
+  "assessed_checks": 40,
+  "domain_scores": [
+    {
+      "domain": "Architecture",
+      "score": 66.7,
+      "assessed": 4
+    },
+    {
+      "domain": "Data",
+      "score": 37.5,
+      "assessed": 4
+    },
+    {
+      "domain": "Delivery",
+      "score": 83.3,
+      "assessed": 4
+    },
+    {
+      "domain": "Observability",
+      "score": 33.3,
+      "assessed": 4
+    },
+    {
+      "domain": "Operations",
+      "score": 79.2,
+      "assessed": 4
+    },
+    {
+      "domain": "Ownership",
+      "score": 83.3,
+      "assessed": 4
+    },
+    {
+      "domain": "Reliability",
+      "score": 25.0,
+      "assessed": 4
+    },
+    {
+      "domain": "Runtime",
+      "score": 41.7,
+      "assessed": 4
+    },
+    {
+      "domain": "Security",
+      "score": 65.6,
+      "assessed": 4
+    },
+    {
+      "domain": "Testing",
+      "score": 45.8,
+      "assessed": 4
+    }
+  ],
+  "critical_blockers": [
+    {
+      "id": "RUN-01",
+      "domain": "Runtime",
+      "priority": "critical",
+      "check": "The Java runtime and Spring Boot line are vendor-supported",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-30",
+      "action": "Choose a supported target and document the upgrade sequence"
+    },
+    {
+      "id": "REL-01",
+      "domain": "Reliability",
+      "priority": "critical",
+      "check": "Retries are bounded, classified, and safe for the operation",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-08-29",
+      "action": "Retry only transient failures with backoff and jitter"
+    }
+  ],
+  "priority_actions": [
+    {
+      "id": "REL-01",
+      "domain": "Reliability",
+      "priority": "critical",
+      "check": "Retries are bounded, classified, and safe for the operation",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-08-29",
+      "action": "Retry only transient failures with backoff and jitter"
+    },
+    {
+      "id": "RUN-01",
+      "domain": "Runtime",
+      "priority": "critical",
+      "check": "The Java runtime and Spring Boot line are vendor-supported",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-30",
+      "action": "Choose a supported target and document the upgrade sequence"
+    },
+    {
+      "id": "DAT-01",
+      "domain": "Data",
+      "priority": "critical",
+      "check": "Database changes are backward-compatible across the rollout window",
+      "status": "partial",
+      "owner": "Database Lead",
+      "target_date": "2026-08-29",
+      "action": "Separate additive and destructive schema changes"
+    },
+    {
+      "id": "OBS-01",
+      "domain": "Observability",
+      "priority": "critical",
+      "check": "Service-level indicators and objectives exist for critical journeys",
+      "status": "partial",
+      "owner": "SRE",
+      "target_date": "2026-08-29",
+      "action": "Measure user-visible success, latency, and availability"
+    },
+    {
+      "id": "SEC-02",
+      "domain": "Security",
+      "priority": "critical",
+      "check": "Authentication and authorization are enforced at every exposed boundary",
+      "status": "partial",
+      "owner": "Security Lead",
+      "target_date": "2026-08-29",
+      "action": "Centralize policy while retaining endpoint-level enforcement"
+    },
+    {
+      "id": "TST-01",
+      "domain": "Testing",
+      "priority": "critical",
+      "check": "Critical business behavior has automated regression coverage",
+      "status": "partial",
+      "owner": "QA Lead",
+      "target_date": "2026-08-22",
+      "action": "Protect behavior before refactoring implementation"
+    },
+    {
+      "id": "DAT-02",
+      "domain": "Data",
+      "priority": "high",
+      "check": "Slow and high-volume queries have measured plans and ownership",
+      "status": "fail",
+      "owner": "Database Lead",
+      "target_date": "2026-08-22",
+      "action": "Optimize using representative parameters and validate result equality"
+    },
+    {
+      "id": "OBS-03",
+      "domain": "Observability",
+      "priority": "high",
+      "check": "Metrics expose traffic, errors, latency, saturation, and dependency health",
+      "status": "fail",
+      "owner": "SRE",
+      "target_date": "2026-09-12",
+      "action": "Alert on symptoms and capacity risk, not raw log volume"
+    },
+    {
+      "id": "SEC-04",
+      "domain": "Security",
+      "priority": "high",
+      "check": "Software artifacts have provenance and automated vulnerability checks",
+      "status": "fail",
+      "owner": "Platform Lead",
+      "target_date": "2026-09-26",
+      "action": "Gate releases on actionable severity thresholds"
+    },
+    {
+      "id": "TST-03",
+      "domain": "Testing",
+      "priority": "high",
+      "check": "Consumer and provider contracts are versioned and verified",
+      "status": "fail",
+      "owner": "Integration Lead",
+      "target_date": "2026-09-19",
+      "action": "Validate compatibility before independent deployment"
+    },
+    {
+      "id": "ARC-02",
+      "domain": "Architecture",
+      "priority": "high",
+      "check": "Module boundaries prevent business logic from depending directly on delivery frameworks",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-19",
+      "action": "Introduce enforceable package or module boundaries"
+    },
+    {
+      "id": "ARC-03",
+      "domain": "Architecture",
+      "priority": "high",
+      "check": "External integrations are isolated behind stable interfaces",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-26",
+      "action": "Wrap remote clients, messaging, filesystem, and vendor SDKs"
+    },
+    {
+      "id": "DAT-03",
+      "domain": "Data",
+      "priority": "high",
+      "check": "Connection pools, transaction timeouts, and retry behavior are bounded",
+      "status": "partial",
+      "owner": "SRE",
+      "target_date": "2026-09-05",
+      "action": "Set limits from measured concurrency and database capacity"
+    },
+    {
+      "id": "DEL-02",
+      "domain": "Delivery",
+      "priority": "high",
+      "check": "Rollout and rollback procedures are tested",
+      "status": "partial",
+      "owner": "Platform Lead",
+      "target_date": "2026-08-29",
+      "action": "Use incremental rollout with explicit abort thresholds"
+    },
+    {
+      "id": "OBS-02",
+      "domain": "Observability",
+      "priority": "high",
+      "check": "Logs are structured, correlated, and exclude sensitive data",
+      "status": "partial",
+      "owner": "SRE",
+      "target_date": "2026-09-05",
+      "action": "Propagate correlation context across HTTP, messaging, and jobs"
+    },
+    {
+      "id": "OPS-03",
+      "domain": "Operations",
+      "priority": "high",
+      "check": "Backup restoration and disaster recovery are tested",
+      "status": "partial",
+      "owner": "Database Lead",
+      "target_date": "2026-09-19",
+      "action": "Measure actual RPO and RTO instead of relying on configuration"
+    },
+    {
+      "id": "OWN-03",
+      "domain": "Ownership",
+      "priority": "high",
+      "check": "Consumers, traffic patterns, and critical journeys are inventoried",
+      "status": "partial",
+      "owner": "Integration Lead",
+      "target_date": "2026-08-15",
+      "action": "Capture synchronous, asynchronous, batch, and manual consumers"
+    },
+    {
+      "id": "REL-02",
+      "domain": "Reliability",
+      "priority": "high",
+      "check": "Remote calls have timeouts and failure isolation",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-05",
+      "action": "Define connect, read, and total deadlines plus circuit or bulkhead policy"
+    },
+    {
+      "id": "REL-03",
+      "domain": "Reliability",
+      "priority": "high",
+      "check": "Asynchronous consumers handle duplicates, poison messages, and replay",
+      "status": "partial",
+      "owner": "Integration Lead",
+      "target_date": "2026-09-12",
+      "action": "Make handlers idempotent and define replay ownership"
+    },
+    {
+      "id": "RUN-02",
+      "domain": "Runtime",
+      "priority": "high",
+      "check": "Dependencies are inventoried with known vulnerabilities and end-of-life status",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-08-29",
+      "action": "Remove unused libraries and plan high-risk upgrades separately"
+    },
+    {
+      "id": "ARC-04",
+      "domain": "Architecture",
+      "priority": "medium",
+      "check": "Shared libraries have a clear owner, compatibility policy, and removal path",
+      "status": "fail",
+      "owner": "Architecture Lead",
+      "target_date": "2026-10-03",
+      "action": "Prefer small stable contracts over shared business logic"
+    },
+    {
+      "id": "OBS-04",
+      "domain": "Observability",
+      "priority": "medium",
+      "check": "Traces connect expensive or failure-prone distributed paths",
+      "status": "fail",
+      "owner": "SRE",
+      "target_date": "2026-10-03",
+      "action": "Instrument boundaries and retain enough context for diagnosis"
+    },
+    {
+      "id": "OPS-04",
+      "domain": "Operations",
+      "priority": "medium",
+      "check": "Operational cost and capacity trends are reviewed",
+      "status": "fail",
+      "owner": "Product Owner",
+      "target_date": "2026-10-10",
+      "action": "Track unit cost and define scaling or optimization triggers"
+    },
+    {
+      "id": "REL-04",
+      "domain": "Reliability",
+      "priority": "medium",
+      "check": "Capacity limits and degradation behavior are known",
+      "status": "fail",
+      "owner": "SRE",
+      "target_date": "2026-10-10",
+      "action": "Test saturation and preserve critical journeys first"
+    },
+    {
+      "id": "TST-04",
+      "domain": "Testing",
+      "priority": "medium",
+      "check": "Performance tests have representative data and pass/fail thresholds",
+      "status": "fail",
+      "owner": "QA Lead",
+      "target_date": "2026-09-26",
+      "action": "Track latency, throughput, saturation, and error rate"
+    },
+    {
+      "id": "DAT-04",
+      "domain": "Data",
+      "priority": "medium",
+      "check": "Retention, archival, and cleanup jobs are documented and monitored",
+      "status": "partial",
+      "owner": "Database Lead",
+      "target_date": "2026-09-19",
+      "action": "Bound table growth and rehearse cleanup failure recovery"
+    },
+    {
+      "id": "DEL-04",
+      "domain": "Delivery",
+      "priority": "medium",
+      "check": "Database, application, and message changes have an ordered release plan",
+      "status": "partial",
+      "owner": "Release Lead",
+      "target_date": "2026-09-05",
+      "action": "Keep old and new versions interoperable during rollout"
+    },
+    {
+      "id": "OWN-04",
+      "domain": "Ownership",
+      "priority": "medium",
+      "check": "Modernization goals have measurable success criteria",
+      "status": "partial",
+      "owner": "Product Owner",
+      "target_date": "2026-08-22",
+      "action": "Define targets for reliability, delivery speed, cost, and maintainability"
+    },
+    {
+      "id": "RUN-04",
+      "domain": "Runtime",
+      "priority": "medium",
+      "check": "JVM and container resource settings are explicit and reproducible",
+      "status": "partial",
+      "owner": "SRE",
+      "target_date": "2026-09-12",
+      "action": "Version configuration and test it under representative load"
+    }
+  ]
+}
