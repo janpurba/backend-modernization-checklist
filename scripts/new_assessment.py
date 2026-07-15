@@ -12,7 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Create a conservative assessment worksheet.")
+    parser = argparse.ArgumentParser(
+        description="Create a conservative source-code modernization worksheet."
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
         "--catalog", type=Path, default=ROOT / "checklist" / "catalog.csv"
@@ -22,7 +24,7 @@ def main() -> int:
     checks = load_catalog(args.catalog)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(["id", "status", "evidence", "owner", "target_date", "notes"])
         for check in checks:
             writer.writerow(

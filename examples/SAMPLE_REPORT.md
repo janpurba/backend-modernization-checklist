@@ -1,59 +1,67 @@
-# Modernization Assessment: sample-assessment
+# Source-Code Modernization Assessment: sample-assessment
 
 **Decision:** BLOCKED
-**Weighted score:** 56.5%
+**Weighted score:** 41.2%
 **Assessed checks:** 40
 
 ## Domain Scores
 
 | Domain | Score | Checks |
 | --- | ---: | ---: |
-| Architecture | 66.7% | 4 |
-| Data | 37.5% | 4 |
-| Delivery | 83.3% | 4 |
-| Observability | 33.3% | 4 |
-| Operations | 79.2% | 4 |
-| Ownership | 83.3% | 4 |
-| Reliability | 25.0% | 4 |
-| Runtime | 41.7% | 4 |
-| Security | 65.6% | 4 |
-| Testing | 45.8% | 4 |
+| API and Integration Contracts | 25.0% | 4 |
+| Architecture | 33.3% | 4 |
+| Data and Persistence | 45.8% | 4 |
+| Maintainability and Code Health | 31.2% | 4 |
+| Observability Instrumentation | 45.0% | 4 |
+| Reliability and Concurrency | 21.4% | 4 |
+| Runtime | 62.5% | 4 |
+| Security | 75.0% | 4 |
+| Testing and Verification | 50.0% | 4 |
+| Upgrade Compatibility | 12.5% | 4 |
 
 ## Critical Blockers
 
-- **RUN-01 (Runtime)**: The Java runtime and Spring Boot line are vendor-supported Owner: Backend Lead. Target: 2026-09-30.
-- **REL-01 (Reliability)**: Retries are bounded, classified, and safe for the operation Owner: Backend Lead. Target: 2026-08-29.
+- **CMP-01 (Upgrade Compatibility)**: Source code is free of removed, deprecated-for-removal, and internal JDK APIs for the selected target Owner: Backend Lead. Target: 2026-08-15.
+- **REL-02 (Reliability and Concurrency)**: Remote calls use deadlines, bounded retries, failure isolation, and operation-safe idempotency Owner: Backend Lead. Target: 2026-08-29.
+- **API-02 (API and Integration Contracts)**: Request, response, and event changes preserve backward compatibility Owner: Integration Lead. Target: 2026-08-29.
 
 ## Priority Actions
 
 | ID | Priority | Status | Owner | Target | Recommended action |
 | --- | --- | --- | --- | --- | --- |
-| REL-01 | critical | fail | Backend Lead | 2026-08-29 | Retry only transient failures with backoff and jitter |
-| RUN-01 | critical | fail | Backend Lead | 2026-09-30 | Choose a supported target and document the upgrade sequence |
-| DAT-01 | critical | partial | Database Lead | 2026-08-29 | Separate additive and destructive schema changes |
-| OBS-01 | critical | partial | SRE | 2026-08-29 | Measure user-visible success, latency, and availability |
-| SEC-02 | critical | partial | Security Lead | 2026-08-29 | Centralize policy while retaining endpoint-level enforcement |
-| TST-01 | critical | partial | QA Lead | 2026-08-22 | Protect behavior before refactoring implementation |
-| DAT-02 | high | fail | Database Lead | 2026-08-22 | Optimize using representative parameters and validate result equality |
-| OBS-03 | high | fail | SRE | 2026-09-12 | Alert on symptoms and capacity risk, not raw log volume |
-| SEC-04 | high | fail | Platform Lead | 2026-09-26 | Gate releases on actionable severity thresholds |
-| TST-03 | high | fail | Integration Lead | 2026-09-19 | Validate compatibility before independent deployment |
-| ARC-02 | high | partial | Backend Lead | 2026-09-19 | Introduce enforceable package or module boundaries |
-| ARC-03 | high | partial | Backend Lead | 2026-09-26 | Wrap remote clients, messaging, filesystem, and vendor SDKs |
-| DAT-03 | high | partial | SRE | 2026-09-05 | Set limits from measured concurrency and database capacity |
-| DEL-02 | high | partial | Platform Lead | 2026-08-29 | Use incremental rollout with explicit abort thresholds |
-| OBS-02 | high | partial | SRE | 2026-09-05 | Propagate correlation context across HTTP, messaging, and jobs |
-| OPS-03 | high | partial | Database Lead | 2026-09-19 | Measure actual RPO and RTO instead of relying on configuration |
-| OWN-03 | high | partial | Integration Lead | 2026-08-15 | Capture synchronous, asynchronous, batch, and manual consumers |
-| REL-02 | high | partial | Backend Lead | 2026-09-05 | Define connect, read, and total deadlines plus circuit or bulkhead policy |
-| REL-03 | high | partial | Integration Lead | 2026-09-12 | Make handlers idempotent and define replay ownership |
-| RUN-02 | high | partial | Backend Lead | 2026-08-29 | Remove unused libraries and plan high-risk upgrades separately |
-| ARC-04 | medium | fail | Architecture Lead | 2026-10-03 | Prefer small stable contracts over shared business logic |
-| OBS-04 | medium | fail | SRE | 2026-10-03 | Instrument boundaries and retain enough context for diagnosis |
-| OPS-04 | medium | fail | Product Owner | 2026-10-10 | Track unit cost and define scaling or optimization triggers |
-| REL-04 | medium | fail | SRE | 2026-10-10 | Test saturation and preserve critical journeys first |
-| TST-04 | medium | fail | QA Lead | 2026-09-26 | Track latency, throughput, saturation, and error rate |
-| DAT-04 | medium | partial | Database Lead | 2026-09-19 | Bound table growth and rehearse cleanup failure recovery |
-| DEL-04 | medium | partial | Release Lead | 2026-09-05 | Keep old and new versions interoperable during rollout |
-| OWN-04 | medium | partial | Product Owner | 2026-08-22 | Define targets for reliability, delivery speed, cost, and maintainability |
-| RUN-04 | medium | partial | SRE | 2026-09-12 | Version configuration and test it under representative load |
+| API-02 | critical | fail | Integration Lead | 2026-08-29 | Prefer additive evolution and retain compatibility during the migration window |
+| REL-02 | critical | fail | Backend Lead | 2026-08-29 | Set connect and response deadlines and retry only safe transient failures |
+| CMP-01 | critical | fail | Backend Lead | 2026-08-15 | Replace unsupported JDK APIs before changing the runtime |
+| ARC-01 | critical | partial | Architecture Lead | 2026-08-29 | Define boundaries and enforce them with architecture tests |
+| DAT-01 | critical | partial | Database Lead | 2026-08-29 | Separate additive and destructive changes across a compatibility window |
+| RUN-01 | critical | partial | Backend Lead | 2026-08-15 | Select a supported target pair and make compiler and runtime versions explicit |
+| SEC-02 | critical | partial | Security Lead | 2026-08-29 | Enforce endpoint and method authorization with deny-by-default behavior |
+| TST-01 | critical | partial | QA Lead | 2026-08-29 | Protect current behavior before refactoring or upgrading |
+| ARC-02 | high | fail | Architecture Lead | 2026-09-19 | Move business decisions behind framework-neutral application or domain interfaces |
+| MNT-01 | high | fail | Backend Lead | 2026-09-19 | Split high-complexity code along cohesive responsibilities |
+| REL-04 | high | fail | Backend Lead | 2026-09-05 | Use bounded executors and remove unsafe shared mutable state |
+| TST-03 | high | fail | Integration Lead | 2026-09-12 | Run compatibility tests before changing public contracts |
+| CMP-03 | high | fail | Backend Lead | 2026-09-05 | Upgrade or replace incompatible integrations before the framework change |
+| API-01 | high | partial | Integration Lead | 2026-09-05 | Version contract artifacts with the code that implements them |
+| API-03 | high | partial | Backend Lead | 2026-09-12 | Standardize public error semantics and make deprecation explicit |
+| ARC-03 | high | partial | Integration Lead | 2026-09-05 | Isolate external clients so integrations can be upgraded and tested independently |
+| DAT-02 | high | partial | Database Lead | 2026-09-05 | Remove risky implicit ORM behavior and document intentional mappings |
+| DAT-03 | high | partial | Backend Lead | 2026-09-05 | Place transaction boundaries in the service layer and configure non-default semantics deliberately |
+| MNT-02 | high | partial | Backend Lead | 2026-09-26 | Remove unused paths and consolidate duplicated behavior before migration |
+| OBS-01 | high | partial | Backend Lead | 2026-09-05 | Use structured events and propagate correlation context across boundaries |
+| OBS-02 | high | partial | Backend Lead | 2026-09-12 | Expose traffic, error, latency, and saturation signals at code boundaries |
+| OBS-04 | high | partial | Backend Lead | 2026-09-12 | Report readiness only after required application state is usable |
+| REL-01 | high | partial | Backend Lead | 2026-08-22 | Preserve failure semantics and remove catch-all success responses |
+| REL-03 | high | partial | Integration Lead | 2026-09-12 | Make handlers idempotent and define bounded recovery paths |
+| RUN-02 | high | partial | Backend Lead | 2026-08-22 | Centralize versions, remove duplicate overrides, and resolve dependency convergence failures |
+| SEC-04 | high | partial | Security Lead | 2026-09-05 | Automate component analysis and review actionable findings |
+| CMP-02 | high | partial | Security Lead | 2026-08-22 | Apply each skipped migration guide and remove temporary migration helpers |
+| API-04 | medium | fail | Backend Lead | 2026-09-05 | Make wire-format behavior explicit and tolerant where compatibility requires it |
+| ARC-04 | medium | fail | Architecture Lead | 2026-09-12 | Replace hidden coupling with constructor-injected explicit dependencies |
+| DAT-04 | medium | fail | Database Lead | 2026-08-22 | Add pagination or batching and prevent unbounded data loading |
+| OBS-03 | medium | fail | Backend Lead | 2026-09-19 | Preserve trace context across every asynchronous or remote boundary |
+| CMP-04 | medium | unknown | Backend Lead | 2026-09-12 | Review each extension point against target release notes and make critical defaults explicit |
+| MNT-03 | medium | partial | Backend Lead | 2026-09-19 | Replace broad suppressions and convert migration debt into explicit actions |
+| MNT-04 | medium | partial | Backend Lead | 2026-09-26 | Adopt enforceable rules and keep exclusions narrow and documented |
+| RUN-04 | medium | partial | Platform Engineer | 2026-08-29 | Declare resource settings and avoid environment-dependent implicit defaults |
+| TST-04 | medium | partial | QA Lead | 2026-09-05 | Remove shared state, timing assumptions, and environment-dependent test behavior |

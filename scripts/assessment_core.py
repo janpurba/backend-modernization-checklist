@@ -190,7 +190,7 @@ def evaluate(checks: Iterable[Check], answers: Iterable[Answer]) -> dict:
 
 def render_markdown(result: dict, assessment_name: str) -> str:
     lines = [
-        f"# Modernization Assessment: {assessment_name}",
+        f"# Source-Code Modernization Assessment: {assessment_name}",
         "",
         f"**Decision:** {result['decision']}",
         f"**Weighted score:** {result['score']:.1f}%",

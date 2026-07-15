@@ -69,14 +69,17 @@ Commit the inventory as an assessment artifact so compatibility decisions remain
 - Verify trace context across HTTP, messaging, and scheduled work.
 - Ensure readiness does not report success before critical dependencies and migrations are ready.
 
-## Definition of Done
+## Source-Code Definition of Done
 
 - Supported target runtime and framework line
-- Reproducible build and immutable artifact
+- Build and dependency convergence verified on the target
+- Removed and deprecated migration blockers resolved
 - No failed critical assessment checks
 - Regression and contract suites green
-- Backward-compatible migration and tested rollback
-- Representative performance within agreed thresholds
-- Dashboards, alerts, runbooks, ownership, and recovery evidence updated
+- Backward-compatible database and API changes
+- Transaction, concurrency, security, and serialization behavior verified
+- Logging, metrics, tracing, health, and readiness instrumentation reviewed
+
+Production rollout, rollback, measured performance, dashboards, alerts, ownership, recovery, and operational readiness remain separate release gates. They are not represented by the source-code score.
 
 See [Sources and Traceability](references.md) for citation scope and limitations.

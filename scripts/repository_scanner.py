@@ -61,6 +61,9 @@ SOURCE_URLS = {
     "GOOGLE-SRE": "https://sre.google/",
     "DORA": "https://dora.dev/guides/",
     "SPRING-BOOT": "https://docs.spring.io/spring-boot/index.html",
+    "SPRING-BOOT-UPGRADE": "https://docs.spring.io/spring-boot/upgrading.html",
+    "SPRING-FRAMEWORK": "https://docs.spring.io/spring-framework/reference/",
+    "JAVA-MIGRATION": "https://docs.oracle.com/en/java/javase/21/migrate/",
 }
 
 
@@ -257,24 +260,27 @@ def prefill_assessment(
         else:
             manual(check_id, missing_reason or f"No repository signal found for: {description}")
 
-    codeowners = view.paths([r"(^|/)CODEOWNERS$"])
-    architecture_docs = view.find(
-        [r"\b(context diagram|service boundary|architecture|capabilit(?:y|ies))\b"],
-        path_patterns=[r"README", r"docs/", r"\.md$"],
-    )
-    consumer_docs = view.find(
-        [r"\b(consumer|caller|dependency|integration|openapi|asyncapi)\b"],
-        path_patterns=[r"README", r"docs/", r"openapi", r"asyncapi", r"\.ya?ml$"],
-    )
-    measurable_goals = view.find(
-        [r"\b(SLO|baseline|target latency|error budget|deployment frequency|change fail)\b"],
-        path_patterns=[r"README", r"docs/", r"\.ya?ml$"],
-    )
-
-    hybrid("OWN-01", "Ownership metadata", codeowners, confidence="low")
-    hybrid("OWN-02", "Architecture or capability documentation", architecture_docs)
-    hybrid("OWN-03", "Consumer or integration inventory", consumer_docs, confidence="low")
-    hybrid("OWN-04", "Measurable modernization or reliability goals", measurable_goals)
+    def review(
+        check_id: str,
+        description: str,
+        paths: Iterable[str],
+        *,
+        confidence: str = "low",
+        missing_reason: str | None = None,
+    ) -> None:
+        found = list(dict.fromkeys(paths))
+        if found:
+            results[check_id] = Prefill(
+                check_id,
+                "unknown",
+                f"Review finding - {description}: {', '.join(found)}",
+                "Potential risk signal found; confirm the context before deciding pass, partial, or fail.",
+                "HYBRID",
+                source_map.get(check_id, ""),
+                confidence,
+            )
+        else:
+            manual(check_id, missing_reason or f"No conclusive repository evidence for: {description}")
 
     build_paths = view.paths([r"(^|/)(pom\.xml|build\.gradle(?:\.kts)?)$"])
     version_evidence = (
@@ -293,96 +299,174 @@ def prefill_assessment(
     else:
         manual("RUN-01", "No Maven or Gradle build descriptor found")
 
-    dependency_scan = view.find(
-        [r"dependency-check|dependencytrack|dependabot|renovate|snyk|trivy|grype"],
-        path_patterns=[r"pom\.xml", r"gradle", r"\.github/", r"Jenkinsfile", r"\.ya?ml$"],
-    )
     if build_paths:
-        scan_suffix = (
-            f"; vulnerability scan configuration: {', '.join(dependency_scan)}"
-            if dependency_scan
-            else "; no vulnerability scan configuration detected"
-        )
         results["RUN-02"] = Prefill(
             "RUN-02",
             "partial",
             f"Dependency inventory contains {len(inventory.dependencies)} coordinates from "
-            f"{', '.join(build_paths)}{scan_suffix}",
-            "Inventory is static and unresolved; vulnerability and end-of-life status require tool output and review.",
+            f"{', '.join(build_paths)}",
+            "Inventory is static and unresolved; version convergence and plugin compatibility require build-tool output and review.",
             "HYBRID",
             source_map.get("RUN-02", ""),
-            "high" if dependency_scan else "medium",
+            "medium",
         )
     else:
         manual("RUN-02", "No Maven or Gradle dependency descriptor found")
-    graceful = view.find(
-        [r"server\.shutdown\s*[:=]\s*graceful", r"shutdown\s*:\s*graceful", r"graceful[ -]shutdown"]
+    startup_validation = view.find(
+        [r"@ConfigurationProperties", r"BindValidationException", r"spring\.config\.on-not-found", r"fail[- ]fast"],
+        path_patterns=[r"src/main/", r"\.properties$", r"\.ya?ml$"],
     )
-    startup_validation = view.find([r"@ConfigurationProperties", r"@Validated", r"fail[- ]fast"])
-    hybrid("RUN-03", "Startup validation or graceful shutdown", graceful + startup_validation)
+    hybrid("RUN-03", "Typed configuration or startup validation", startup_validation)
     runtime_limits = view.find(
-        [r"MaxRAMPercentage|-Xmx|-Xms|resources:\s*$|memory:\s*\d|JAVA_TOOL_OPTIONS"],
-        path_patterns=[r"Dockerfile", r"\.ya?ml$", r"\.properties$", r"Jenkinsfile"],
+        [
+            r"MaxRAMPercentage|-Xmx|-Xms|resources:\s*$|memory:\s*\d|JAVA_TOOL_OPTIONS",
+            r"maximum[-_.]?pool[-_.]?size|core[-_.]?pool[-_.]?size|max[-_.]?pool[-_.]?size",
+            r"ThreadPoolTaskExecutor|ExecutorService",
+        ],
+        path_patterns=[r"Dockerfile", r"\.ya?ml$", r"\.properties$", r"\.java$", r"\.kt$"],
     )
-    hybrid("RUN-04", "Explicit JVM or container resource settings", runtime_limits)
+    hybrid("RUN-04", "Explicit runtime and resource settings", runtime_limits)
 
-    transaction_signals = view.find(
-        [r"@Transactional|TransactionTemplate|transaction boundary|data owner"],
-        path_patterns=[r"\.java$", r"\.kt$", r"\.md$"],
+    jdk_migration_risks = view.find(
+        [
+            r"\b(?:sun|com\.sun|jdk\.internal)\.",
+            r"\bThread\.(?:stop|suspend|resume)\s*\(",
+            r"\bSystem\.setSecurityManager\s*\(",
+        ],
+        path_patterns=[r"src/main/.*\.(?:java|kt|groovy)$"],
     )
-    hybrid("ARC-01", "Transaction or data ownership signals", transaction_signals, confidence="low")
+    review(
+        "CMP-01",
+        "potential removed, internal, or deprecated-for-removal JDK API usage",
+        jdk_migration_risks,
+        confidence="medium",
+        missing_reason="No known JDK migration-risk pattern found; target-aware compiler and jdeprscan output are still required",
+    )
+    spring_migration_risks = view.find(
+        [
+            r"WebSecurityConfigurerAdapter|HandlerInterceptorAdapter",
+            r"EnableGlobalMethodSecurity|\.antMatchers\s*\(",
+            r"spring-boot-properties-migrator",
+        ]
+    )
+    review(
+        "CMP-02",
+        "potential deprecated Spring API, configuration, or migration helper",
+        spring_migration_risks,
+        confidence="medium",
+        missing_reason="No known Spring migration-risk pattern found; target release migration output is still required",
+    )
+    integration_compatibility = view.find(
+        [
+            r"import\s+javax\.(?:annotation|persistence|servlet|transaction|validation|ws\.rs)\.",
+            r"\b(?:aspectj|byte-buddy|lombok|mapstruct|javaagent)\b",
+        ],
+        path_patterns=[r"src/", r"pom\.xml$", r"build\.gradle", r"Dockerfile"],
+    )
+    review(
+        "CMP-03",
+        "namespace, bytecode-tool, or library-integration compatibility hotspots",
+        integration_compatibility,
+        confidence="low",
+    )
+    extension_points = view.find(
+        [
+            r"(?:Filter|HandlerInterceptor|Converter|Serializer|Deserializer)\b",
+            r"@Aspect\b|BeanPostProcessor|ApplicationContextInitializer",
+            r"AutoConfiguration\.imports|spring\.factories|@AutoConfiguration",
+        ],
+        path_patterns=[r"src/main/", r"META-INF/", r"\.factories$"],
+    )
+    hybrid("CMP-04", "Framework extension-point migration hotspots", extension_points, confidence="low")
+
     architecture_tests = view.find([r"ArchUnit|layeredArchitecture|slices\(\)|SpringModulith"])
-    hybrid("ARC-02", "Enforced module or architecture boundaries", architecture_tests)
+    module_descriptors = view.paths([r"module-info\.java$", r"package-info\.java$"])
+    hybrid("ARC-01", "Enforced package or module boundaries", architecture_tests + module_descriptors)
+    domain_boundaries = view.find(
+        [r"package\s+[\w.]*\.(?:domain|application)(?:\.|;)", r"\b(?:UseCase|DomainService)\b"],
+        path_patterns=[r"src/main/.*\.(?:java|kt)$"],
+    )
+    hybrid("ARC-02", "Framework-neutral application or domain boundaries", domain_boundaries, confidence="low")
     adapter_signals = view.find(
         [r"\b(adapter|gateway|port)\b|WebClient|RestClient|FeignClient|RestTemplate"],
         path_patterns=[r"src/main/.*\.(java|kt)$"],
     )
     hybrid("ARC-03", "External integration adapters or clients", adapter_signals, confidence="low")
-    shared_library_docs = view.find(
-        [r"shared librar|compatibility policy|version policy"], path_patterns=[r"\.md$"]
+    hidden_coupling = view.find(
+        [
+            r"ApplicationContext\s*\.\s*getBean|applicationContext\.getBean",
+            r"static\s+(?:ApplicationContext|BeanFactory)",
+            r"@Autowired\s+(?:private|protected|public)?\s*[\w<>?,. ]+\s+\w+\s*;",
+        ],
+        path_patterns=[r"src/main/.*\.(?:java|kt)$"],
     )
-    hybrid("ARC-04", "Shared-library ownership or compatibility policy", shared_library_docs)
+    review(
+        "ARC-04",
+        "hidden framework coupling",
+        hidden_coupling,
+        confidence="medium",
+        missing_reason="No known hidden-coupling pattern found; cycle analysis is still required",
+    )
 
     migration_paths = view.paths([r"db/migration/", r"liquibase", r"changelog.*\.(xml|ya?ml|json)$"])
     hybrid("DAT-01", "Versioned database migrations", migration_paths)
-    plan_evidence = view.find(
-        [r"EXPLAIN(?: ANALYZE)?|query digest|rows examined"],
-        path_patterns=[r"\.md$", r"evidence/", r"artifacts/", r"\.sql$"],
-    )
-    hybrid("DAT-02", "Query plans or digest evidence", plan_evidence)
-    pool_config = view.find(
+    persistence_mappings = view.find(
         [
-            r"maximum[-_.]?pool[-_.]?size",
-            r"connection[-_.]?timeout",
-            r"validation[-_.]?timeout",
-            r"idle[-_.]?timeout",
-            r"maximumPoolSize",
+            r"@Entity\b|@Document\b|@Table\b",
+            r"fetch\s*=\s*FetchType\.|cascade\s*=|@Lock\b|ddl-auto",
         ],
-        path_patterns=[r"\.properties$", r"\.ya?ml$", r"\.java$", r"\.kt$"],
+        path_patterns=[r"src/main/", r"\.properties$", r"\.ya?ml$"],
     )
-    hybrid("DAT-03", "Bounded connection-pool configuration", pool_config)
-    retention = view.find(
-        [r"retention|archive|cleanup|purge|delete.*older than|@Scheduled"],
-        path_patterns=[r"src/", r"docs/", r"\.sql$", r"\.md$"],
+    hybrid("DAT-02", "Explicit persistence mapping or locking signals", persistence_mappings, confidence="low")
+    transaction_signals = view.find(
+        [
+            r"@Transactional\b|TransactionTemplate",
+            r"PlatformTransactionManager|setPropagationBehavior|setIsolationLevel|setTransactionTimeout",
+        ],
+        path_patterns=[r"src/main/.*\.(?:java|kt)$"],
     )
-    hybrid("DAT-04", "Retention or cleanup implementation", retention, confidence="low")
+    hybrid("DAT-03", "Explicit transaction semantics", transaction_signals, confidence="low")
+    bounded_data_access = view.find(
+        [
+            r"\bPageable\b|\bPageRequest\b|setMaxResults\s*\(",
+            r"batchUpdate\s*\(|saveAllAndFlush\s*\(|chunk\s*\(",
+            r"\bLIMIT\s+(?:\?|:\w+|\d+)",
+        ],
+        path_patterns=[r"src/main/", r"\.sql$"],
+    )
+    hybrid("DAT-04", "Bounded query, pagination, or batch access", bounded_data_access, confidence="low")
 
+    exception_semantics = view.find(
+        [r"@(?:Rest)?ControllerAdvice|ProblemDetail|ResponseStatusException|ExceptionHandler\s*\("],
+        path_patterns=[r"src/main/.*\.(?:java|kt)$"],
+    )
+    hybrid("REL-01", "Explicit exception and failure semantics", exception_semantics, confidence="low")
     retry = view.find([r"@Retryable|resilience4j\.retry|RetryTemplate|retryWhen"])
     idempotency = view.find([r"idempoten|dedup|Idempotency-Key|processed_event"])
-    hybrid("REL-01", "Retry and idempotency signals", retry + idempotency, confidence="low")
     timeouts = view.find(
         [r"connect[-_.]?timeout|read[-_.]?timeout|response[-_.]?timeout|callTimeout|TimeLimiter"],
         path_patterns=[r"src/", r"\.properties$", r"\.ya?ml$"],
     )
     isolation = view.find([r"CircuitBreaker|Bulkhead|resilience4j\.(circuitbreaker|bulkhead)"])
-    hybrid("REL-02", "Remote-call deadlines or failure isolation", timeouts + isolation)
+    hybrid(
+        "REL-02",
+        "Remote-call deadlines, bounded retry, isolation, or idempotency",
+        timeouts + retry + isolation + idempotency,
+        confidence="low",
+    )
     messaging_safety = view.find(
         [r"dead[-_. ]?letter|DLQ|DeadLetter|idempoten|dedup|DefaultAfterRollbackProcessor"]
     )
     hybrid("REL-03", "Duplicate or poison-message handling", messaging_safety, confidence="low")
-    load_tests = view.paths([r"(^|/)(k6|jmeter|gatling|load-tests?|performance-tests?)(/|\.)"])
-    load_tests += view.find([r"http_reqs|constant-arrival-rate|jmeter|gatling"], limit=4)
-    hybrid("REL-04", "Load or degradation test assets", load_tests)
+    concurrency = view.find(
+        [
+            r"@Async\b|@Scheduled\b|ThreadPoolTaskExecutor|ExecutorService",
+            r"core[-_.]?pool[-_.]?size|max[-_.]?pool[-_.]?size|queue[-_.]?capacity",
+            r"synchronized\s*\(|Atomic(?:Integer|Long|Reference)|ReentrantLock",
+        ],
+        path_patterns=[r"src/main/", r"\.properties$", r"\.ya?ml$"],
+    )
+    hybrid("REL-04", "Async, scheduler, executor, or shared-state controls", concurrency, confidence="low")
 
     high_confidence_secrets = [
         finding for finding in inventory.secret_findings if finding.confidence == "high"
@@ -421,16 +505,47 @@ def prefill_assessment(
             confidence="medium",
             missing_reason="No high-confidence secret found, but no secret-scanning configuration was detected; absence is not proof",
         )
-    security = view.find([r"SecurityFilterChain|EnableMethodSecurity|spring-boot-starter-security"])
+    security = view.find(
+        [
+            r"SecurityFilterChain|WebSecurityConfigurerAdapter",
+            r"EnableMethodSecurity|EnableWebSecurity|spring-boot-starter-security",
+        ]
+    )
     hybrid("SEC-02", "Spring Security boundary configuration", security, confidence="low")
-    validation = view.find([r"jakarta\.validation|@Valid\b|@Validated\b|ConstraintValidator"])
-    redaction = view.find([r"redact|mask(?:ing)?|sensitive.*log|JsonIgnore"])
-    hybrid("SEC-03", "Input validation or sensitive-data handling", validation + redaction, confidence="low")
-    artifact_security = dependency_scan + view.find(
-        [r"cyclonedx|spdx|sbom|cosign|provenance|attest"],
+    validation = view.find(
+        [
+            r"jakarta\.validation|javax\.validation|@Valid\b|@Validated\b|ConstraintValidator",
+            r"redact|mask(?:ing)?|sensitive.*log|JsonIgnore",
+        ]
+    )
+    sensitive_sinks = view.find(
+        [r"ObjectInputStream|Runtime\.getRuntime\(\)\.exec|ProcessBuilder|Paths?\.get\("]
+    )
+    if validation:
+        hybrid(
+            "SEC-03",
+            "Trust-boundary validation or redaction"
+            + ("; sensitive sinks also require review" if sensitive_sinks else ""),
+            validation + sensitive_sinks,
+            confidence="low",
+        )
+    else:
+        review(
+            "SEC-03",
+            "sensitive sinks without detected validation or redaction",
+            sensitive_sinks,
+            confidence="low",
+            missing_reason="No validation or redaction signal found; manual trust-boundary review is required",
+        )
+    dependency_scan = view.find(
+        [r"dependency-check|dependencytrack|dependabot|renovate|snyk|trivy|grype"],
         path_patterns=[r"pom\.xml", r"gradle", r"\.github/", r"Jenkinsfile", r"\.ya?ml$"],
     )
-    hybrid("SEC-04", "Artifact provenance, SBOM, or vulnerability scanning", artifact_security)
+    component_security = dependency_scan + view.find(
+        [r"cyclonedx|spdx|sbom"],
+        path_patterns=[r"pom\.xml", r"gradle", r"\.github/", r"Jenkinsfile", r"\.ya?ml$"],
+    )
+    hybrid("SEC-04", "Component vulnerability or SBOM analysis", component_security)
 
     test_paths = view.paths([r"(^|/)src/test/.*\.(java|kt|groovy)$"], limit=8)
     hybrid("TST-01", f"Automated tests ({inventory.test_files} test source files)", test_paths, confidence="low")
@@ -444,47 +559,105 @@ def prefill_assessment(
     )
     contract_tests = view.find([r"spring-cloud-contract|pact-jvm|@Pact|ContractVerifier"])
     hybrid("TST-03", "Consumer or provider contract testing", contract_tests)
-    hybrid("TST-04", "Performance-test assets", load_tests)
+    deterministic_tests = view.find(
+        [r"@DirtiesContext|@Sql\b|@ResourceLock|Clock\b|Awaitility|junit\.jupiter\.execution\.parallel"],
+        path_patterns=[r"src/test/", r"pom\.xml$", r"build\.gradle", r"junit-platform\.properties$"],
+    )
+    hybrid("TST-04", "Test isolation or deterministic-time controls", deterministic_tests, confidence="low")
 
-    slo = view.find([r"serviceLevelObjective|service_level_objective|error budget|\bSLOs?\b"])
-    hybrid("OBS-01", "SLI, SLO, or error-budget configuration", slo)
     structured_logs = view.find(
         [r"logstash-logback|ecs-logging|logging\.structured|correlation[-_. ]?id|traceId|MDC\.put"],
         path_patterns=[r"pom\.xml", r"gradle", r"src/", r"\.properties$", r"\.ya?ml$"],
     )
-    hybrid("OBS-02", "Structured or correlated logging", structured_logs, confidence="low")
+    hybrid("OBS-01", "Structured, correlated, or redacted logging", structured_logs, confidence="low")
     metrics = view.find([r"spring-boot-starter-actuator|micrometer|/actuator/prometheus|MeterRegistry"])
-    hybrid("OBS-03", "Actuator, metrics, or dependency-health instrumentation", metrics, confidence="low")
+    hybrid("OBS-02", "Actuator or Micrometer metrics instrumentation", metrics, confidence="low")
     tracing = view.find([r"opentelemetry|micrometer-tracing|zipkin|brave|ObservationRegistry"])
-    hybrid("OBS-04", "Distributed tracing instrumentation", tracing, confidence="low")
+    hybrid("OBS-03", "Distributed tracing instrumentation", tracing, confidence="low")
+    health = view.find(
+        [r"HealthIndicator|ReactiveHealthIndicator|AvailabilityChangeEvent", r"management\.endpoint\.health|readiness|liveness"],
+        path_patterns=[r"src/main/", r"\.properties$", r"\.ya?ml$"],
+    )
+    hybrid("OBS-04", "Health, readiness, or startup-state instrumentation", health, confidence="low")
 
-    ci = view.paths([r"^\.github/workflows/.*\.ya?ml$", r"(^|/)Jenkinsfile$", r"\.gitlab-ci\.yml$"])
-    container_build = view.paths([r"(^|/)Dockerfile$"])
-    hybrid("DEL-01", "CI pipeline and repeatable build assets", ci + container_build, confidence="low")
-    rollout = view.find(
-        [r"canary|blue[- ]green|rollback|rollout|abort threshold"],
-        path_patterns=[r"\.github/", r"deploy", r"helm", r"k8s", r"docs/", r"\.md$", r"\.ya?ml$"],
+    complexity_analysis = view.find(
+        [r"sonar\.complexity|cyclomatic|pmd|checkstyle"],
+        path_patterns=[r"pom\.xml$", r"build\.gradle", r"sonar", r"pmd", r"checkstyle"],
     )
-    hybrid("DEL-02", "Incremental rollout or rollback procedure", rollout, confidence="low")
-    config_validation = view.find([r"@ConfigurationProperties|@Validated|BindValidationException"])
-    hybrid("DEL-03", "Configuration binding or startup validation", config_validation, confidence="low")
-    message_compatibility = view.find([r"schema registry|compatibility|expand[- ]contract|event version"])
-    hybrid("DEL-04", "Ordered compatibility or release sequencing", migration_paths + message_compatibility, confidence="low")
+    oversized_sources = _large_source_files(view)
+    if complexity_analysis:
+        hybrid(
+            "MNT-01",
+            "Complexity analysis configuration"
+            + ("; oversized sources also require review" if oversized_sources else ""),
+            complexity_analysis + oversized_sources,
+            confidence="low",
+        )
+    else:
+        review(
+            "MNT-01",
+            "oversized source files without detected complexity analysis",
+            oversized_sources,
+            confidence="low",
+            missing_reason="No complexity analysis configuration found; source complexity remains unverified",
+        )
+    code_cleanup = view.find(
+        [r"duplicate-finder|maven-dependency-analyzer|dependencyAnalysis|deptrim|sonar\.cpd"],
+        path_patterns=[r"pom\.xml$", r"build\.gradle", r"\.ya?ml$", r"\.properties$"],
+    )
+    hybrid("MNT-02", "Duplicate, dead-code, or unused-dependency analysis", code_cleanup, confidence="low")
+    debt_markers = view.find(
+        [r"\b(?:TODO|FIXME|HACK|XXX)\b", r"@SuppressWarnings|noinspection"],
+        path_patterns=[r"src/main/.*\.(?:java|kt|groovy)$"],
+    )
+    review(
+        "MNT-03",
+        "technical-debt markers or suppressions",
+        debt_markers,
+        confidence="low",
+        missing_reason="No debt marker found; scope and actionability of technical debt remain unverified",
+    )
+    static_analysis = view.find(
+        [r"checkstyle|pmd|spotbugs|errorprone|sonar|detekt"],
+        path_patterns=[r"pom\.xml$", r"build\.gradle", r"\.github/", r"Jenkinsfile", r"\.ya?ml$", r"\.xml$"],
+    )
+    hybrid("MNT-04", "Versioned static-analysis configuration", static_analysis, confidence="medium")
 
-    on_call = view.find([r"on[- ]call|escalation|pagerduty|opsgenie"], path_patterns=[r"docs/", r"README", r"\.ya?ml$"])
-    hybrid("OPS-01", "On-call or escalation metadata", on_call, confidence="low")
-    runbooks = view.paths([r"runbooks?/", r"runbook.*\.md$"])
-    hybrid("OPS-02", "Operational runbooks", runbooks, confidence="low")
-    recovery = view.find(
-        [r"backup|restore|disaster recovery|\bRPO\b|\bRTO\b"],
-        path_patterns=[r"docs/", r"runbook", r"README", r"\.ya?ml$"],
+    contracts = view.paths(
+        [
+            r"openapi.*\.(?:ya?ml|json)$",
+            r"asyncapi.*\.(?:ya?ml|json)$",
+            r"\.(?:avsc|proto|graphqls)$",
+            r"json.?schema.*\.json$",
+        ]
     )
-    hybrid("OPS-03", "Backup or recovery documentation", recovery, confidence="low")
-    capacity = view.find(
-        [r"capacity|cost baseline|cost per|forecast|autoscal"],
-        path_patterns=[r"docs/", r"README", r"\.ya?ml$", r"terraform", r"helm"],
+    contracts += view.find(
+        [r"@OpenAPIDefinition|@Operation\b|springdoc-openapi"],
+        path_patterns=[r"src/main/", r"pom\.xml$", r"build\.gradle"],
     )
-    hybrid("OPS-04", "Capacity or cost-management evidence", capacity, confidence="low")
+    hybrid("API-01", "Machine-readable API or message contracts", contracts, confidence="medium")
+    compatibility_checks = view.find(
+        [r"openapi-diff|oasdiff|revapi|japicmp|schema.?registry.*compatib|compatibilityLevel"],
+        path_patterns=[r"pom\.xml$", r"build\.gradle", r"\.github/", r"src/test/", r"\.ya?ml$"],
+    )
+    hybrid("API-02", "Automated backward-compatibility checks", compatibility_checks, confidence="medium")
+    api_semantics = view.find(
+        [
+            r"@(?:Rest)?ControllerAdvice|ProblemDetail|ErrorResponse",
+            r"@(?:Request|Get|Post|Put|Delete|Patch)Mapping\s*\([^)]*['\"]/v\d+",
+            r"ApiVersion|deprecated\s*=\s*true",
+        ],
+        path_patterns=[r"src/main/", r"openapi", r"asyncapi", r"\.ya?ml$", r"\.json$"],
+    )
+    hybrid("API-03", "Versioning or consistent public error semantics", api_semantics, confidence="low")
+    serialization = view.find(
+        [
+            r"ObjectMapper|Jackson2ObjectMapperBuilder|@JsonFormat|@JsonEnumDefaultValue",
+            r"FAIL_ON_UNKNOWN_PROPERTIES|READ_UNKNOWN_ENUM_VALUES|JsonInclude",
+        ],
+        path_patterns=[r"src/main/", r"\.properties$", r"\.ya?ml$"],
+    )
+    hybrid("API-04", "Explicit serialization compatibility rules", serialization, confidence="low")
 
     for check in check_list:
         if check.check_id not in results:
@@ -503,7 +676,7 @@ def load_source_map(path: Path) -> dict[str, str]:
 def write_assessment(path: Path, prefills: Iterable[Prefill]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(
             [
                 "id",
@@ -588,9 +761,10 @@ def render_scan_report(inventory: Inventory, prefills: Iterable[Prefill]) -> str
             "",
             "## Required Human Review",
             "",
-            "- Verify vendor support dates and commercial support agreements.",
-            "- Review authorization behavior, data ownership, and transaction boundaries.",
-            "- Attach runtime evidence for SLOs, query plans, capacity, rollback, restore, and incident readiness.",
+            "- Verify detected Java and Spring Boot versions against the selected target support policy.",
+            "- Run target-aware compiler, dependency convergence, and JDK deprecation analysis.",
+            "- Review authorization, transaction, concurrency, and compatibility behavior.",
+            "- Validate repository signals by compiling and testing the target application separately.",
             "- Investigate secret findings without committing credential values to assessment artifacts.",
             "- Replace scanner-generated evidence only after a reviewer confirms the final status.",
         ]
@@ -672,6 +846,19 @@ def _gradle_inventory(view: RepositoryView) -> tuple[str, str, list[str], list[s
         for match in re.finditer(r"['\"]([\w.-]+:[\w.-]+)(?::[^'\"]+)?['\"]", text):
             dependencies.append(match.group(1))
     return java_version, boot_version, dependencies, plugins
+
+
+def _large_source_files(view: RepositoryView, *, line_limit: int = 500) -> list[str]:
+    matches: list[str] = []
+    for path in sorted(view.files):
+        if not re.search(r"src/main/.*\.(?:java|kt|groovy)$", path, re.IGNORECASE):
+            continue
+        nonblank_lines = sum(1 for line in view.files[path].splitlines() if line.strip())
+        if nonblank_lines > line_limit:
+            matches.append(path)
+            if len(matches) == 6:
+                break
+    return matches
 
 
 def _scan_secrets(view: RepositoryView) -> list[SecretFinding]:

@@ -14,6 +14,9 @@ KNOWN_SOURCES = {
     "GOOGLE-SRE",
     "DORA",
     "SPRING-BOOT",
+    "SPRING-BOOT-UPGRADE",
+    "SPRING-FRAMEWORK",
+    "JAVA-MIGRATION",
 }
 RELATIONSHIPS = {"inspired", "practitioner-synthesis"}
 

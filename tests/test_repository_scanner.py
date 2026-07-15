@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
 
@@ -46,10 +47,99 @@ class RepositoryScannerTest(unittest.TestCase):
         self.assertEqual(40, len(prefills))
         self.assertTrue(all(item.source_basis for item in prefills.values()))
         self.assertEqual("partial", prefills["RUN-01"].status)
-        self.assertEqual("HYBRID", prefills["ARC-02"].assessment_type)
-        self.assertEqual("partial", prefills["DAT-03"].status)
+        self.assertEqual("HYBRID", prefills["ARC-01"].assessment_type)
+        self.assertEqual("unknown", prefills["CMP-01"].status)
+        self.assertEqual("partial", prefills["OBS-02"].status)
         self.assertEqual("partial", prefills["TST-02"].status)
-        self.assertEqual("partial", prefills["DEL-03"].status)
+        self.assertNotIn("DEL-03", prefills)
+
+    def test_catalog_has_four_checks_in_each_final_domain(self) -> None:
+        checks = load_catalog(ROOT / "checklist" / "catalog.csv")
+        self.assertEqual(
+            {
+                "API and Integration Contracts",
+                "Architecture",
+                "Data and Persistence",
+                "Maintainability and Code Health",
+                "Observability Instrumentation",
+                "Reliability and Concurrency",
+                "Runtime",
+                "Security",
+                "Testing and Verification",
+                "Upgrade Compatibility",
+            },
+            {check.domain for check in checks},
+        )
+        self.assertEqual({4}, set(Counter(check.domain for check in checks).values()))
+        self.assertFalse(
+            any(check.check_id.startswith(("OWN-", "DEL-", "OPS-")) for check in checks)
+        )
+
+    def test_detects_upgrade_maintainability_and_api_signals(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pom.xml").write_text(
+                "<project><modelVersion>4.0.0</modelVersion>"
+                "<build><plugins><plugin><artifactId>maven-checkstyle-plugin</artifactId>"
+                "</plugin></plugins></build></project>",
+                encoding="utf-8",
+            )
+            source = root / "src" / "main" / "java" / "example"
+            source.mkdir(parents=True)
+            (source / "LegacyFilter.java").write_text(
+                "package example;\n"
+                "import javax.servlet.Filter;\n"
+                "class LegacyFilter implements Filter { // TODO migrate\n"
+                "  Object mapper = new ObjectMapper();\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            (root / "openapi.yaml").write_text("openapi: 3.0.3\n", encoding="utf-8")
+            view = collect_repository(root)
+            prefills = {
+                item.check_id: item
+                for item in prefill_assessment(
+                    view,
+                    build_inventory(view),
+                    load_catalog(ROOT / "checklist" / "catalog.csv"),
+                    load_source_map(ROOT / "checklist" / "source-map.csv"),
+                )
+            }
+            self.assertEqual("unknown", prefills["CMP-03"].status)
+            self.assertEqual("HYBRID", prefills["CMP-03"].assessment_type)
+            self.assertEqual("partial", prefills["CMP-04"].status)
+            self.assertEqual("unknown", prefills["MNT-03"].status)
+            self.assertEqual("HYBRID", prefills["MNT-03"].assessment_type)
+            self.assertEqual("partial", prefills["MNT-04"].status)
+            self.assertEqual("partial", prefills["API-01"].status)
+            self.assertEqual("partial", prefills["API-04"].status)
+
+    def test_domain_specific_detectors_ignore_unrelated_similar_text(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "src" / "main" / "java" / "example"
+            source.mkdir(parents=True)
+            (source / "Request.java").write_text(
+                "package example;\n"
+                "@Validated class Request {\n"
+                '  String externalUrl = "https://example.test/v1/items";\n'
+                "  int timeout = 10;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            view = collect_repository(root)
+            prefills = {
+                item.check_id: item
+                for item in prefill_assessment(
+                    view,
+                    build_inventory(view),
+                    load_catalog(ROOT / "checklist" / "catalog.csv"),
+                    load_source_map(ROOT / "checklist" / "source-map.csv"),
+                )
+            }
+            self.assertEqual("unknown", prefills["RUN-03"].status)
+            self.assertEqual("unknown", prefills["DAT-03"].status)
+            self.assertEqual("unknown", prefills["API-03"].status)
 
     def test_placeholder_secret_is_not_reported(self) -> None:
         inventory, prefills = self.scan_fixture()

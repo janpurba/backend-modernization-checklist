@@ -1,371 +1,451 @@
 {
   "decision": "BLOCKED",
-  "score": 56.5,
+  "score": 41.2,
   "assessed_checks": 40,
   "domain_scores": [
     {
-      "domain": "Architecture",
-      "score": 66.7,
-      "assessed": 4
-    },
-    {
-      "domain": "Data",
-      "score": 37.5,
-      "assessed": 4
-    },
-    {
-      "domain": "Delivery",
-      "score": 83.3,
-      "assessed": 4
-    },
-    {
-      "domain": "Observability",
-      "score": 33.3,
-      "assessed": 4
-    },
-    {
-      "domain": "Operations",
-      "score": 79.2,
-      "assessed": 4
-    },
-    {
-      "domain": "Ownership",
-      "score": 83.3,
-      "assessed": 4
-    },
-    {
-      "domain": "Reliability",
+      "domain": "API and Integration Contracts",
       "score": 25.0,
       "assessed": 4
     },
     {
+      "domain": "Architecture",
+      "score": 33.3,
+      "assessed": 4
+    },
+    {
+      "domain": "Data and Persistence",
+      "score": 45.8,
+      "assessed": 4
+    },
+    {
+      "domain": "Maintainability and Code Health",
+      "score": 31.2,
+      "assessed": 4
+    },
+    {
+      "domain": "Observability Instrumentation",
+      "score": 45.0,
+      "assessed": 4
+    },
+    {
+      "domain": "Reliability and Concurrency",
+      "score": 21.4,
+      "assessed": 4
+    },
+    {
       "domain": "Runtime",
-      "score": 41.7,
+      "score": 62.5,
       "assessed": 4
     },
     {
       "domain": "Security",
-      "score": 65.6,
+      "score": 75.0,
       "assessed": 4
     },
     {
-      "domain": "Testing",
-      "score": 45.8,
+      "domain": "Testing and Verification",
+      "score": 50.0,
+      "assessed": 4
+    },
+    {
+      "domain": "Upgrade Compatibility",
+      "score": 12.5,
       "assessed": 4
     }
   ],
   "critical_blockers": [
     {
-      "id": "RUN-01",
-      "domain": "Runtime",
+      "id": "CMP-01",
+      "domain": "Upgrade Compatibility",
       "priority": "critical",
-      "check": "The Java runtime and Spring Boot line are vendor-supported",
+      "check": "Source code is free of removed, deprecated-for-removal, and internal JDK APIs for the selected target",
       "status": "fail",
       "owner": "Backend Lead",
-      "target_date": "2026-09-30",
-      "action": "Choose a supported target and document the upgrade sequence"
+      "target_date": "2026-08-15",
+      "action": "Replace unsupported JDK APIs before changing the runtime"
     },
     {
-      "id": "REL-01",
-      "domain": "Reliability",
+      "id": "REL-02",
+      "domain": "Reliability and Concurrency",
       "priority": "critical",
-      "check": "Retries are bounded, classified, and safe for the operation",
+      "check": "Remote calls use deadlines, bounded retries, failure isolation, and operation-safe idempotency",
       "status": "fail",
       "owner": "Backend Lead",
       "target_date": "2026-08-29",
-      "action": "Retry only transient failures with backoff and jitter"
+      "action": "Set connect and response deadlines and retry only safe transient failures"
+    },
+    {
+      "id": "API-02",
+      "domain": "API and Integration Contracts",
+      "priority": "critical",
+      "check": "Request, response, and event changes preserve backward compatibility",
+      "status": "fail",
+      "owner": "Integration Lead",
+      "target_date": "2026-08-29",
+      "action": "Prefer additive evolution and retain compatibility during the migration window"
     }
   ],
   "priority_actions": [
     {
-      "id": "REL-01",
-      "domain": "Reliability",
+      "id": "API-02",
+      "domain": "API and Integration Contracts",
       "priority": "critical",
-      "check": "Retries are bounded, classified, and safe for the operation",
+      "check": "Request, response, and event changes preserve backward compatibility",
+      "status": "fail",
+      "owner": "Integration Lead",
+      "target_date": "2026-08-29",
+      "action": "Prefer additive evolution and retain compatibility during the migration window"
+    },
+    {
+      "id": "REL-02",
+      "domain": "Reliability and Concurrency",
+      "priority": "critical",
+      "check": "Remote calls use deadlines, bounded retries, failure isolation, and operation-safe idempotency",
       "status": "fail",
       "owner": "Backend Lead",
       "target_date": "2026-08-29",
-      "action": "Retry only transient failures with backoff and jitter"
+      "action": "Set connect and response deadlines and retry only safe transient failures"
+    },
+    {
+      "id": "CMP-01",
+      "domain": "Upgrade Compatibility",
+      "priority": "critical",
+      "check": "Source code is free of removed, deprecated-for-removal, and internal JDK APIs for the selected target",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-08-15",
+      "action": "Replace unsupported JDK APIs before changing the runtime"
+    },
+    {
+      "id": "ARC-01",
+      "domain": "Architecture",
+      "priority": "critical",
+      "check": "Package or module boundaries and dependency direction are explicit and enforceable",
+      "status": "partial",
+      "owner": "Architecture Lead",
+      "target_date": "2026-08-29",
+      "action": "Define boundaries and enforce them with architecture tests"
+    },
+    {
+      "id": "DAT-01",
+      "domain": "Data and Persistence",
+      "priority": "critical",
+      "check": "Database migrations are versioned, additive, and backward-compatible",
+      "status": "partial",
+      "owner": "Database Lead",
+      "target_date": "2026-08-29",
+      "action": "Separate additive and destructive changes across a compatibility window"
     },
     {
       "id": "RUN-01",
       "domain": "Runtime",
       "priority": "critical",
-      "check": "The Java runtime and Spring Boot line are vendor-supported",
-      "status": "fail",
+      "check": "Java and Spring Boot versions are explicit and compatible with the selected supported target",
+      "status": "partial",
       "owner": "Backend Lead",
-      "target_date": "2026-09-30",
-      "action": "Choose a supported target and document the upgrade sequence"
-    },
-    {
-      "id": "DAT-01",
-      "domain": "Data",
-      "priority": "critical",
-      "check": "Database changes are backward-compatible across the rollout window",
-      "status": "partial",
-      "owner": "Database Lead",
-      "target_date": "2026-08-29",
-      "action": "Separate additive and destructive schema changes"
-    },
-    {
-      "id": "OBS-01",
-      "domain": "Observability",
-      "priority": "critical",
-      "check": "Service-level indicators and objectives exist for critical journeys",
-      "status": "partial",
-      "owner": "SRE",
-      "target_date": "2026-08-29",
-      "action": "Measure user-visible success, latency, and availability"
+      "target_date": "2026-08-15",
+      "action": "Select a supported target pair and make compiler and runtime versions explicit"
     },
     {
       "id": "SEC-02",
       "domain": "Security",
       "priority": "critical",
-      "check": "Authentication and authorization are enforced at every exposed boundary",
+      "check": "Authentication and authorization protect every exposed boundary",
       "status": "partial",
       "owner": "Security Lead",
       "target_date": "2026-08-29",
-      "action": "Centralize policy while retaining endpoint-level enforcement"
+      "action": "Enforce endpoint and method authorization with deny-by-default behavior"
     },
     {
       "id": "TST-01",
-      "domain": "Testing",
+      "domain": "Testing and Verification",
       "priority": "critical",
       "check": "Critical business behavior has automated regression coverage",
       "status": "partial",
       "owner": "QA Lead",
-      "target_date": "2026-08-22",
-      "action": "Protect behavior before refactoring implementation"
-    },
-    {
-      "id": "DAT-02",
-      "domain": "Data",
-      "priority": "high",
-      "check": "Slow and high-volume queries have measured plans and ownership",
-      "status": "fail",
-      "owner": "Database Lead",
-      "target_date": "2026-08-22",
-      "action": "Optimize using representative parameters and validate result equality"
-    },
-    {
-      "id": "OBS-03",
-      "domain": "Observability",
-      "priority": "high",
-      "check": "Metrics expose traffic, errors, latency, saturation, and dependency health",
-      "status": "fail",
-      "owner": "SRE",
-      "target_date": "2026-09-12",
-      "action": "Alert on symptoms and capacity risk, not raw log volume"
-    },
-    {
-      "id": "SEC-04",
-      "domain": "Security",
-      "priority": "high",
-      "check": "Software artifacts have provenance and automated vulnerability checks",
-      "status": "fail",
-      "owner": "Platform Lead",
-      "target_date": "2026-09-26",
-      "action": "Gate releases on actionable severity thresholds"
-    },
-    {
-      "id": "TST-03",
-      "domain": "Testing",
-      "priority": "high",
-      "check": "Consumer and provider contracts are versioned and verified",
-      "status": "fail",
-      "owner": "Integration Lead",
-      "target_date": "2026-09-19",
-      "action": "Validate compatibility before independent deployment"
+      "target_date": "2026-08-29",
+      "action": "Protect current behavior before refactoring or upgrading"
     },
     {
       "id": "ARC-02",
       "domain": "Architecture",
       "priority": "high",
-      "check": "Module boundaries prevent business logic from depending directly on delivery frameworks",
-      "status": "partial",
+      "check": "Business logic is separated from web, persistence, messaging, and framework-specific code",
+      "status": "fail",
+      "owner": "Architecture Lead",
+      "target_date": "2026-09-19",
+      "action": "Move business decisions behind framework-neutral application or domain interfaces"
+    },
+    {
+      "id": "MNT-01",
+      "domain": "Maintainability and Code Health",
+      "priority": "high",
+      "check": "Method, class, and module complexity is controlled",
+      "status": "fail",
       "owner": "Backend Lead",
       "target_date": "2026-09-19",
-      "action": "Introduce enforceable package or module boundaries"
+      "action": "Split high-complexity code along cohesive responsibilities"
+    },
+    {
+      "id": "REL-04",
+      "domain": "Reliability and Concurrency",
+      "priority": "high",
+      "check": "Async tasks, schedulers, executors, and mutable shared state are safe and bounded",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-05",
+      "action": "Use bounded executors and remove unsafe shared mutable state"
+    },
+    {
+      "id": "TST-03",
+      "domain": "Testing and Verification",
+      "priority": "high",
+      "check": "API and message compatibility is verified automatically",
+      "status": "fail",
+      "owner": "Integration Lead",
+      "target_date": "2026-09-12",
+      "action": "Run compatibility tests before changing public contracts"
+    },
+    {
+      "id": "CMP-03",
+      "domain": "Upgrade Compatibility",
+      "priority": "high",
+      "check": "Namespaces, annotations, bytecode tools, and library integrations are compatible with the target stack",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-05",
+      "action": "Upgrade or replace incompatible integrations before the framework change"
+    },
+    {
+      "id": "API-01",
+      "domain": "API and Integration Contracts",
+      "priority": "high",
+      "check": "HTTP APIs and message schemas have machine-readable contracts",
+      "status": "partial",
+      "owner": "Integration Lead",
+      "target_date": "2026-09-05",
+      "action": "Version contract artifacts with the code that implements them"
+    },
+    {
+      "id": "API-03",
+      "domain": "API and Integration Contracts",
+      "priority": "high",
+      "check": "Versioning, status codes, error models, and deprecation behavior are consistent",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-12",
+      "action": "Standardize public error semantics and make deprecation explicit"
     },
     {
       "id": "ARC-03",
       "domain": "Architecture",
       "priority": "high",
-      "check": "External integrations are isolated behind stable interfaces",
+      "check": "External systems are accessed through stable interfaces or adapters",
       "status": "partial",
-      "owner": "Backend Lead",
-      "target_date": "2026-09-26",
-      "action": "Wrap remote clients, messaging, filesystem, and vendor SDKs"
+      "owner": "Integration Lead",
+      "target_date": "2026-09-05",
+      "action": "Isolate external clients so integrations can be upgraded and tested independently"
+    },
+    {
+      "id": "DAT-02",
+      "domain": "Data and Persistence",
+      "priority": "high",
+      "check": "Entity mapping, fetch strategy, cascade behavior, locking, and schema generation are explicit",
+      "status": "partial",
+      "owner": "Database Lead",
+      "target_date": "2026-09-05",
+      "action": "Remove risky implicit ORM behavior and document intentional mappings"
     },
     {
       "id": "DAT-03",
-      "domain": "Data",
+      "domain": "Data and Persistence",
       "priority": "high",
-      "check": "Connection pools, transaction timeouts, and retry behavior are bounded",
-      "status": "partial",
-      "owner": "SRE",
-      "target_date": "2026-09-05",
-      "action": "Set limits from measured concurrency and database capacity"
-    },
-    {
-      "id": "DEL-02",
-      "domain": "Delivery",
-      "priority": "high",
-      "check": "Rollout and rollback procedures are tested",
-      "status": "partial",
-      "owner": "Platform Lead",
-      "target_date": "2026-08-29",
-      "action": "Use incremental rollout with explicit abort thresholds"
-    },
-    {
-      "id": "OBS-02",
-      "domain": "Observability",
-      "priority": "high",
-      "check": "Logs are structured, correlated, and exclude sensitive data",
-      "status": "partial",
-      "owner": "SRE",
-      "target_date": "2026-09-05",
-      "action": "Propagate correlation context across HTTP, messaging, and jobs"
-    },
-    {
-      "id": "OPS-03",
-      "domain": "Operations",
-      "priority": "high",
-      "check": "Backup restoration and disaster recovery are tested",
-      "status": "partial",
-      "owner": "Database Lead",
-      "target_date": "2026-09-19",
-      "action": "Measure actual RPO and RTO instead of relying on configuration"
-    },
-    {
-      "id": "OWN-03",
-      "domain": "Ownership",
-      "priority": "high",
-      "check": "Consumers, traffic patterns, and critical journeys are inventoried",
-      "status": "partial",
-      "owner": "Integration Lead",
-      "target_date": "2026-08-15",
-      "action": "Capture synchronous, asynchronous, batch, and manual consumers"
-    },
-    {
-      "id": "REL-02",
-      "domain": "Reliability",
-      "priority": "high",
-      "check": "Remote calls have timeouts and failure isolation",
+      "check": "Transaction boundaries, propagation, isolation, rollback rules, and timeouts are explicit",
       "status": "partial",
       "owner": "Backend Lead",
       "target_date": "2026-09-05",
-      "action": "Define connect, read, and total deadlines plus circuit or bulkhead policy"
+      "action": "Place transaction boundaries in the service layer and configure non-default semantics deliberately"
+    },
+    {
+      "id": "MNT-02",
+      "domain": "Maintainability and Code Health",
+      "priority": "high",
+      "check": "Duplication, dead code, and unused dependencies are minimized",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-26",
+      "action": "Remove unused paths and consolidate duplicated behavior before migration"
+    },
+    {
+      "id": "OBS-01",
+      "domain": "Observability Instrumentation",
+      "priority": "high",
+      "check": "Logs are structured, correlated, and exclude sensitive data",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-05",
+      "action": "Use structured events and propagate correlation context across boundaries"
+    },
+    {
+      "id": "OBS-02",
+      "domain": "Observability Instrumentation",
+      "priority": "high",
+      "check": "Metrics instrument requests, dependencies, messaging, and executors",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-12",
+      "action": "Expose traffic, error, latency, and saturation signals at code boundaries"
+    },
+    {
+      "id": "OBS-04",
+      "domain": "Observability Instrumentation",
+      "priority": "high",
+      "check": "Health, readiness, and startup state reflect application and dependency conditions",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-12",
+      "action": "Report readiness only after required application state is usable"
+    },
+    {
+      "id": "REL-01",
+      "domain": "Reliability and Concurrency",
+      "priority": "high",
+      "check": "Exceptions are classified and are not swallowed or converted into false success",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-08-22",
+      "action": "Preserve failure semantics and remove catch-all success responses"
     },
     {
       "id": "REL-03",
-      "domain": "Reliability",
+      "domain": "Reliability and Concurrency",
       "priority": "high",
-      "check": "Asynchronous consumers handle duplicates, poison messages, and replay",
+      "check": "Message consumers handle duplicates, poison messages, dead letters, and replay",
       "status": "partial",
       "owner": "Integration Lead",
       "target_date": "2026-09-12",
-      "action": "Make handlers idempotent and define replay ownership"
+      "action": "Make handlers idempotent and define bounded recovery paths"
     },
     {
       "id": "RUN-02",
       "domain": "Runtime",
       "priority": "high",
-      "check": "Dependencies are inventoried with known vulnerabilities and end-of-life status",
+      "check": "Dependency and build-plugin versions are controlled, convergent, and inventory-ready",
       "status": "partial",
       "owner": "Backend Lead",
-      "target_date": "2026-08-29",
-      "action": "Remove unused libraries and plan high-risk upgrades separately"
+      "target_date": "2026-08-22",
+      "action": "Centralize versions, remove duplicate overrides, and resolve dependency convergence failures"
+    },
+    {
+      "id": "SEC-04",
+      "domain": "Security",
+      "priority": "high",
+      "check": "Dependencies and build plugins can be checked for vulnerabilities and supply-chain risk",
+      "status": "partial",
+      "owner": "Security Lead",
+      "target_date": "2026-09-05",
+      "action": "Automate component analysis and review actionable findings"
+    },
+    {
+      "id": "CMP-02",
+      "domain": "Upgrade Compatibility",
+      "priority": "high",
+      "check": "Source and configuration do not rely on deprecated Spring APIs, mechanisms, or properties for the selected target",
+      "status": "partial",
+      "owner": "Security Lead",
+      "target_date": "2026-08-22",
+      "action": "Apply each skipped migration guide and remove temporary migration helpers"
+    },
+    {
+      "id": "API-04",
+      "domain": "API and Integration Contracts",
+      "priority": "medium",
+      "check": "Serialization rules for dates, enums, nulls, and unknown fields are explicit",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-05",
+      "action": "Make wire-format behavior explicit and tolerant where compatibility requires it"
     },
     {
       "id": "ARC-04",
       "domain": "Architecture",
       "priority": "medium",
-      "check": "Shared libraries have a clear owner, compatibility policy, and removal path",
+      "check": "Circular dependencies, service locators, static application-context access, and hidden framework coupling are absent",
       "status": "fail",
       "owner": "Architecture Lead",
-      "target_date": "2026-10-03",
-      "action": "Prefer small stable contracts over shared business logic"
-    },
-    {
-      "id": "OBS-04",
-      "domain": "Observability",
-      "priority": "medium",
-      "check": "Traces connect expensive or failure-prone distributed paths",
-      "status": "fail",
-      "owner": "SRE",
-      "target_date": "2026-10-03",
-      "action": "Instrument boundaries and retain enough context for diagnosis"
-    },
-    {
-      "id": "OPS-04",
-      "domain": "Operations",
-      "priority": "medium",
-      "check": "Operational cost and capacity trends are reviewed",
-      "status": "fail",
-      "owner": "Product Owner",
-      "target_date": "2026-10-10",
-      "action": "Track unit cost and define scaling or optimization triggers"
-    },
-    {
-      "id": "REL-04",
-      "domain": "Reliability",
-      "priority": "medium",
-      "check": "Capacity limits and degradation behavior are known",
-      "status": "fail",
-      "owner": "SRE",
-      "target_date": "2026-10-10",
-      "action": "Test saturation and preserve critical journeys first"
-    },
-    {
-      "id": "TST-04",
-      "domain": "Testing",
-      "priority": "medium",
-      "check": "Performance tests have representative data and pass/fail thresholds",
-      "status": "fail",
-      "owner": "QA Lead",
-      "target_date": "2026-09-26",
-      "action": "Track latency, throughput, saturation, and error rate"
+      "target_date": "2026-09-12",
+      "action": "Replace hidden coupling with constructor-injected explicit dependencies"
     },
     {
       "id": "DAT-04",
-      "domain": "Data",
+      "domain": "Data and Persistence",
       "priority": "medium",
-      "check": "Retention, archival, and cleanup jobs are documented and monitored",
-      "status": "partial",
+      "check": "Queries, pagination, batching, and bulk operations have explicit bounds",
+      "status": "fail",
       "owner": "Database Lead",
-      "target_date": "2026-09-19",
-      "action": "Bound table growth and rehearse cleanup failure recovery"
-    },
-    {
-      "id": "DEL-04",
-      "domain": "Delivery",
-      "priority": "medium",
-      "check": "Database, application, and message changes have an ordered release plan",
-      "status": "partial",
-      "owner": "Release Lead",
-      "target_date": "2026-09-05",
-      "action": "Keep old and new versions interoperable during rollout"
-    },
-    {
-      "id": "OWN-04",
-      "domain": "Ownership",
-      "priority": "medium",
-      "check": "Modernization goals have measurable success criteria",
-      "status": "partial",
-      "owner": "Product Owner",
       "target_date": "2026-08-22",
-      "action": "Define targets for reliability, delivery speed, cost, and maintainability"
+      "action": "Add pagination or batching and prevent unbounded data loading"
+    },
+    {
+      "id": "OBS-03",
+      "domain": "Observability Instrumentation",
+      "priority": "medium",
+      "check": "Trace context propagates across HTTP, messaging, and asynchronous boundaries",
+      "status": "fail",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-19",
+      "action": "Preserve trace context across every asynchronous or remote boundary"
+    },
+    {
+      "id": "CMP-04",
+      "domain": "Upgrade Compatibility",
+      "priority": "medium",
+      "check": "Framework extension points and default-sensitive behavior are inventoried as migration hotspots",
+      "status": "unknown",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-12",
+      "action": "Review each extension point against target release notes and make critical defaults explicit"
+    },
+    {
+      "id": "MNT-03",
+      "domain": "Maintainability and Code Health",
+      "priority": "medium",
+      "check": "Technical-debt markers and suppressions are scoped and actionable",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-19",
+      "action": "Replace broad suppressions and convert migration debt into explicit actions"
+    },
+    {
+      "id": "MNT-04",
+      "domain": "Maintainability and Code Health",
+      "priority": "medium",
+      "check": "Static-analysis rules are versioned and broad suppressions are avoided",
+      "status": "partial",
+      "owner": "Backend Lead",
+      "target_date": "2026-09-26",
+      "action": "Adopt enforceable rules and keep exclusions narrow and documented"
     },
     {
       "id": "RUN-04",
       "domain": "Runtime",
       "priority": "medium",
-      "check": "JVM and container resource settings are explicit and reproducible",
+      "check": "JVM, container, executor, thread-pool, and connection-pool settings are explicit",
       "status": "partial",
-      "owner": "SRE",
-      "target_date": "2026-09-12",
-      "action": "Version configuration and test it under representative load"
+      "owner": "Platform Engineer",
+      "target_date": "2026-08-29",
+      "action": "Declare resource settings and avoid environment-dependent implicit defaults"
+    },
+    {
+      "id": "TST-04",
+      "domain": "Testing and Verification",
+      "priority": "medium",
+      "check": "Tests are deterministic, isolated, and independent of execution order",
+      "status": "partial",
+      "owner": "QA Lead",
+      "target_date": "2026-09-05",
+      "action": "Remove shared state, timing assumptions, and environment-dependent test behavior"
     }
   ]
 }

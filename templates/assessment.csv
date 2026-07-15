@@ -1,41 +1,41 @@
 id,status,evidence,owner,target_date,notes
-OWN-01,fail,Not assessed,,,Owner names and escalation path
-OWN-02,fail,Not assessed,,,Context diagram and capability list
-OWN-03,fail,Not assessed,,,Consumer inventory with request volume and criticality
-OWN-04,fail,Not assessed,,,Baseline and target measures
-RUN-01,fail,Not assessed,,,Runtime inventory and support references
-RUN-02,fail,Not assessed,,,Dependency report and vulnerability scan
-RUN-03,fail,Not assessed,,,Startup logs and graceful-shutdown test
-RUN-04,fail,Not assessed,,,Runtime flags and resource limits
-ARC-01,fail,Not assessed,,,Transaction map and data-owner matrix
-ARC-02,fail,Not assessed,,,Dependency diagram or architecture test
-ARC-03,fail,Not assessed,,,Adapter inventory and contract tests
-ARC-04,fail,Not assessed,,,Library inventory and version policy
-DAT-01,fail,Not assessed,,,Migration plan and expand-contract sequence
-DAT-02,fail,Not assessed,,,Digest ranking and execution plans
-DAT-03,fail,Not assessed,,,Pool metrics and configuration
-DAT-04,fail,Not assessed,,,Retention policy and job metrics
-REL-01,fail,Not assessed,,,Retry policy and idempotency evidence
-REL-02,fail,Not assessed,,,Client configuration and failure test
-REL-03,fail,Not assessed,,,Consumer tests and dead-letter procedure
-REL-04,fail,Not assessed,,,Load-test report and degradation runbook
-SEC-01,fail,Not assessed,,,Secret scan and rotation record
-SEC-02,fail,Not assessed,,,Access-control matrix and negative tests
-SEC-03,fail,Not assessed,,,Security tests and data classification
-SEC-04,fail,Not assessed,,,"SBOM, image scan, and signed build evidence"
-TST-01,fail,Not assessed,,,Critical-journey test map
-TST-02,fail,Not assessed,,,Integration-test evidence
-TST-03,fail,Not assessed,,,Contract-test results
-TST-04,fail,Not assessed,,,Load profile and result report
-OBS-01,fail,Not assessed,,,"SLI definitions, SLOs, and ownership"
-OBS-02,fail,Not assessed,,,Sample logs and redaction tests
-OBS-03,fail,Not assessed,,,Dashboard and metric catalog
-OBS-04,fail,Not assessed,,,Trace samples and sampling policy
-DEL-01,fail,Not assessed,,,Pipeline run and immutable artifact reference
-DEL-02,fail,Not assessed,,,Rehearsal evidence and rollback criteria
-DEL-03,fail,Not assessed,,,Configuration schema and startup validation
-DEL-04,fail,Not assessed,,,Release sequence and compatibility matrix
-OPS-01,fail,Not assessed,,,On-call schedule and escalation policy
-OPS-02,fail,Not assessed,,,Tested runbooks with commands and expected signals
-OPS-03,fail,Not assessed,,,Restore evidence and recovery objectives
-OPS-04,fail,Not assessed,,,Cost baseline and capacity forecast
+RUN-01,fail,Not assessed,,,Build descriptor with Java and Spring Boot versions plus target support reference
+RUN-02,fail,Not assessed,,,Parsed dependency and plugin inventory with convergence evidence
+RUN-03,fail,Not assessed,,,"Configuration classes, validation constraints, and startup validation tests"
+RUN-04,fail,Not assessed,,,Versioned runtime flags and bounded resource configuration
+CMP-01,fail,Not assessed,,,"Target-aware compiler, jdeprscan, or equivalent static-analysis output"
+CMP-02,fail,Not assessed,,,Spring migration report and source locations for deprecated usage
+CMP-03,fail,Not assessed,,,"Compatibility inventory covering imports, annotation processors, agents, and framework integrations"
+CMP-04,fail,Not assessed,,,"Inventory of filters, interceptors, serializers, converters, proxies, aspects, and custom auto-configuration"
+ARC-01,fail,Not assessed,,,Architecture test or module descriptor showing allowed dependencies
+ARC-02,fail,Not assessed,,,Representative dependency paths and boundary tests
+ARC-03,fail,Not assessed,,,"Adapter inventory for HTTP, messaging, filesystem, and vendor SDK access"
+ARC-04,fail,Not assessed,,,Static-analysis results for dependency cycles and framework-context access
+DAT-01,fail,Not assessed,,,Migration scripts and expand-contract review evidence
+DAT-02,fail,Not assessed,,,Persistence mappings and tests for relationship and locking behavior
+DAT-03,fail,Not assessed,,,Transaction annotations or configuration plus rollback tests
+DAT-04,fail,Not assessed,,,Repository queries and tests demonstrating bounded result and batch sizes
+REL-01,fail,Not assessed,,,Exception-handling paths and negative tests
+REL-02,fail,Not assessed,,,Client configuration and failure-injection tests
+REL-03,fail,Not assessed,,,"Consumer configuration and duplicate, dead-letter, and replay tests"
+REL-04,fail,Not assessed,,,Executor configuration and concurrency-focused tests
+SEC-01,fail,Not assessed,,,Secret-scan output and externalized configuration evidence
+SEC-02,fail,Not assessed,,,"Security configuration, access-control mapping, and negative tests"
+SEC-03,fail,Not assessed,,,"Validation, encoding, redaction, and security-test evidence"
+SEC-04,fail,Not assessed,,,"Dependency inventory, vulnerability scan, and SBOM configuration"
+TST-01,fail,Not assessed,,,Critical-behavior test map and executable tests
+TST-02,fail,Not assessed,,,Integration tests using production-compatible disposable dependencies
+TST-03,fail,Not assessed,,,"Consumer, provider, schema, or compatibility test results"
+TST-04,fail,Not assessed,,,Repeat-run results and test-isolation configuration
+OBS-01,fail,Not assessed,,,"Logging configuration, correlation propagation, and redaction tests"
+OBS-02,fail,Not assessed,,,Meter definitions and Actuator or Micrometer configuration
+OBS-03,fail,Not assessed,,,"Tracing dependencies, propagation configuration, and instrumentation points"
+OBS-04,fail,Not assessed,,,"Health indicators, readiness configuration, and startup-state tests"
+MNT-01,fail,Not assessed,,,Static-analysis output for complexity and oversized code units
+MNT-02,fail,Not assessed,,,"Duplicate-code, dead-code, and unused-dependency analysis"
+MNT-03,fail,Not assessed,,,"Inventory of TODO, FIXME, and suppression locations with rationale"
+MNT-04,fail,Not assessed,,,"Checkstyle, PMD, SpotBugs, Error Prone, or equivalent configuration"
+API-01,fail,Not assessed,,,"OpenAPI, AsyncAPI, GraphQL, Avro, Protobuf, or JSON Schema artifacts"
+API-02,fail,Not assessed,,,Old-new contract comparison and compatibility evidence
+API-03,fail,Not assessed,,,Controller or handler review plus documented error and version policy
+API-04,fail,Not assessed,,,Serializer configuration and edge-case compatibility tests

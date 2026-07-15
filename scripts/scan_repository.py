@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Statically prefill a modernization assessment from a Java/Spring Boot repository."
+        description="Statically prefill a source-code modernization assessment from a Java/Spring Boot repository."
     )
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
